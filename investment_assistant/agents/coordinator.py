@@ -8,6 +8,8 @@ from agents.crypto_agent import CryptoAgent
 from agents.news_agent import NewsAgent
 from agents.tech_agent import TechAgent
 from agents.learning_engine import LearningEngine
+from agents.backtest_agent import BacktestAgent
+from agents.risk_agent import RiskAgent
 from memory.database import save_report, get_portfolio, get_pending_signals, get_lessons
 
 SYSTEM_PROMPT = """Eres el director de inversiones personal de un inversor particular.
@@ -38,10 +40,14 @@ class InvestmentCoordinator(BaseAgent):
             "news": NewsAgent(),
             "tech": TechAgent(),
             "learning": LearningEngine(),
+            "backtest": BacktestAgent(),
+            "risk": RiskAgent(),
         }
 
     def run_full_analysis(self, include_tech: bool = True,
-                          include_learning: bool = True) -> Dict:
+                          include_learning: bool = True,
+                          include_backtest: bool = False,
+                          capital: float = 10000.0) -> Dict:
         """Ejecuta el ciclo completo de análisis."""
         print("\n" + "=" * 60)
         print("   ASISTENTE DE INVERSIÓN PERSONAL - ANÁLISIS COMPLETO")
@@ -51,31 +57,49 @@ class InvestmentCoordinator(BaseAgent):
         results = {}
 
         # 1. Noticias (primero para contexto)
-        print("\n[1/5] Analizando noticias del mercado...")
+        print("\n[1/7] Analizando noticias del mercado...")
         results["news"] = self.agents["news"].run()
 
         # 2. Mercado de acciones
-        print("\n[2/5] Analizando acciones y ETFs...")
+        print("\n[2/7] Analizando acciones y ETFs...")
         results["market"] = self.agents["market"].run()
 
         # 3. Criptomonedas
-        print("\n[3/5] Analizando criptomonedas...")
+        print("\n[3/7] Analizando criptomonedas...")
         results["crypto"] = self.agents["crypto"].run()
 
-        # 4. Tech Scout (opcional, consume rate limit de GitHub)
+        # 4. Backtesting (semanal o bajo demanda)
+        if include_backtest:
+            print("\n[4/7] Ejecutando backtests históricos...")
+            results["backtest"] = self.agents["backtest"].run()
+        else:
+            print("\n[4/7] Backtesting omitido (usa --backtest para activar)")
+            results["backtest"] = None
+
+        # 5. Gestión de riesgo + sizing
+        all_signals = []
+        if results.get("market"):
+            all_signals.extend(results["market"].get("actionable_signals", []))
+        if results.get("crypto"):
+            all_signals.extend(results["crypto"].get("actionable_signals", []))
+
+        print("\n[5/7] Calculando gestión de riesgo y sizing...")
+        results["risk"] = self.agents["risk"].run(signals=all_signals, capital=capital)
+
+        # 6. Tech Scout (opcional, consume rate limit de GitHub)
         if include_tech:
-            print("\n[4/5] Escaneando herramientas GitHub...")
+            print("\n[6/7] Escaneando herramientas GitHub...")
             results["tech"] = self.agents["tech"].run()
         else:
-            print("\n[4/5] Tech scout omitido")
+            print("\n[6/7] Tech scout omitido")
             results["tech"] = None
 
-        # 5. Motor de aprendizaje
+        # 7. Motor de aprendizaje
         if include_learning:
-            print("\n[5/5] Ejecutando ciclo de aprendizaje...")
+            print("\n[7/7] Ejecutando ciclo de aprendizaje...")
             results["learning"] = self.agents["learning"].run()
         else:
-            print("\n[5/5] Aprendizaje omitido")
+            print("\n[7/7] Aprendizaje omitido")
             results["learning"] = None
 
         # 6. Síntesis final con IA
