@@ -22,3 +22,5 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+investment_assistant/.env
+investment_assistant/memory/*.db
