@@ -49,7 +49,7 @@ def cmd_full_analysis(quick: bool = False):
         print_crypto_overview, print_news_mood, print_github_tools,
         print_ai_synthesis, print_learning_stats
     )
-    from memory.database import get_lessons, get_agent_accuracy
+    from memory.database import get_lessons
 
     print_header()
 
@@ -57,13 +57,19 @@ def cmd_full_analysis(quick: bool = False):
 
     if quick:
         results = coordinator.run_quick_scan()
+        # run_quick_scan devuelve {"results": analysis_result, "synthesis": ...}
+        r = results.get("results", {}).get("agent_results", {})
     else:
         results = coordinator.run_full_analysis(
             include_tech=not quick,
-            include_learning=not quick
+            include_learning=not quick,
         )
-
-    r = results["results"]
+        # run_full_analysis devuelve {"analysis": ..., "execution": ..., "system": ..., "synthesis": ...}
+        # Construir dict plano con todos los resultados de los agentes
+        r = {}
+        r.update(results.get("analysis", {}).get("agent_results", {}))
+        r.update(results.get("execution", {}).get("agent_results", {}))
+        r.update(results.get("system", {}).get("agent_results", {}))
 
     # --- Mood de noticias ---
     if r.get("news"):
