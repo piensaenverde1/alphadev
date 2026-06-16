@@ -1,0 +1,28 @@
+{
+  "model": "claude-sonnet-4-6",
+  "env": {
+    "MAX_THINKING_TOKENS": "10000",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python*)",
+      "Bash(git*)",
+      "Bash(pip*)",
+      "Bash(ls*)",
+      "Bash(cat*)",
+      "Bash(mkdir*)",
+      "Read(*)",
+      "Edit(*)",
+      "Write(*)"
+    ]
+  },
+  "preferences": {
+    "language": "es",
+    "verbosity": "concise",
+    "always_respond_in_spanish": true,
+    "investment_capital_default": 10000,
+    "risk_per_trade_pct": 2,
+    "max_portfolio_risk_pct": 20
+  }
+}
