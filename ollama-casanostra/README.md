@@ -55,3 +55,27 @@ código), `deepseek-r1` (razonamiento). Catálogo completo: https://ollama.com/l
 
 Todo lo anterior es gratuito y corre en local: no gasta tokens de ninguna
 suscripción y nadie puede bloquearlo.
+
+## Habilidades incluidas (carpeta `habilidades/`)
+
+```bash
+ollama create maestro    -f habilidades/maestro.Modelfile     # tutor personal
+ollama create forjador   -f habilidades/forjador.Modelfile    # programador senior
+ollama create alquimista -f habilidades/alquimista.Modelfile  # crea nuevas habilidades
+```
+
+Luego: `ollama run maestro`, `ollama run forjador`, etc.
+
+## Agente autónomo "cerebro" (super cerebro con equipo)
+
+`cerebro.py` es un agente que, dado un objetivo, monta automáticamente un
+equipo de especialistas (estratega → alquimista → equipo → crítico), genera
+sus prompts, itera hasta que el crítico aprueba, y guarda el resultado más
+las habilidades nuevas en `habilidades_generadas/`:
+
+```bash
+python3 cerebro.py "quiero aprender a invertir en fondos indexados"
+```
+
+Por seguridad, el agente solo genera texto (planes, prompts, código como
+texto): nunca ejecuta comandos por sí mismo — tú revisas e instalas.
