@@ -146,10 +146,22 @@ Reglas:
 """
 EOF
 
-cat > chat_memoria.py <<'EOF'
+cat > chat_memoria.py <<'CHAT_EOF'
 #!/usr/bin/env python3
-"""Chat con memoria persistente para casanostra. Comandos: /recordar <texto>, /memoria, /salir"""
-import json, sys
+"""Chat con memoria persistente y AUTOMÁTICA para casanostra.
+
+- /recordar <texto>  guarda un dato a mano
+- /memoria           muestra la memoria actual
+- /salir             termina la sesión
+- Al salir, el propio modelo resume la conversación y guarda lo importante
+  en memoria.md sin que tengas que hacer nada (memoria automática).
+
+Sin dependencias: solo la librería estándar de Python.
+"""
+
+import json
+import sys
+from datetime import date
 from pathlib import Path
 from urllib import request as urlreq
 
@@ -157,40 +169,103 @@ MODELO = "casanostra"
 URL = "http://localhost:11434/api/chat"
 ARCHIVO = Path(__file__).parent / "memoria.md"
 
-def leer(): return ARCHIVO.read_text(encoding="utf-8") if ARCHIVO.exists() else ""
 
-def preguntar(mensajes):
-    datos = json.dumps({"model": MODELO, "messages": mensajes, "stream": True}).encode()
+def leer() -> str:
+    return ARCHIVO.read_text(encoding="utf-8") if ARCHIVO.exists() else ""
+
+
+def anotar(texto: str) -> None:
+    with ARCHIVO.open("a", encoding="utf-8") as f:
+        f.write(texto.rstrip() + "\n")
+
+
+def preguntar(mensajes: list[dict], stream: bool = True) -> str:
+    datos = json.dumps({"model": MODELO, "messages": mensajes, "stream": stream}).encode()
     req = urlreq.Request(URL, data=datos, headers={"Content-Type": "application/json"})
+    if not stream:
+        with urlreq.urlopen(req, timeout=600) as r:
+            return json.loads(r.read())["message"]["content"].strip()
     respuesta = ""
     with urlreq.urlopen(req, timeout=600) as r:
         for linea in r:
-            if not linea.strip(): continue
+            if not linea.strip():
+                continue
             texto = json.loads(linea).get("message", {}).get("content", "")
-            print(texto, end="", flush=True); respuesta += texto
-    print(); return respuesta
+            print(texto, end="", flush=True)
+            respuesta += texto
+    print()
+    return respuesta
 
-def main():
+
+def resumen_automatico(mensajes: list[dict]) -> None:
+    """Memoria automática: al salir, el modelo resume la sesión y la guarda."""
+    charla = [m for m in mensajes if m["role"] != "system"]
+    if len(charla) < 2:
+        return
+    print("\nGuardando memoria automática...")
+    transcripcion = "\n".join(f"{m['role']}: {m['content']}" for m in charla)
+    resumen = preguntar(
+        [
+            {
+                "role": "system",
+                "content": (
+                    "Resume esta conversación en un máximo de 5 viñetas con SOLO "
+                    "los datos útiles para el futuro: decisiones tomadas, datos "
+                    "personales o del proyecto, tareas pendientes y preferencias "
+                    "del usuario. Si no hay nada que valga la pena recordar, "
+                    "responde exactamente NADA."
+                ),
+            },
+            {"role": "user", "content": transcripcion[-8000:]},
+        ],
+        stream=False,
+    )
+    if resumen.upper().strip() != "NADA":
+        anotar(f"\n## Sesión {date.today()}\n{resumen}")
+        print(f"Memoria guardada en {ARCHIVO}")
+
+
+def main() -> None:
     sistema = "Continúa la conversación con el usuario."
-    if leer(): sistema += "\n\nMemoria de sesiones anteriores:\n" + leer()
+    memoria = leer()
+    if memoria:
+        sistema += "\n\nMemoria de sesiones anteriores:\n" + memoria
     mensajes = [{"role": "system", "content": sistema}]
-    print("Casanostra con memoria. /recordar <dato>, /memoria, /salir")
-    while True:
-        try: entrada = input("\nTú> ").strip()
-        except (EOFError, KeyboardInterrupt): break
-        if not entrada: continue
-        if entrada == "/salir": break
-        if entrada == "/memoria": print(leer() or "(vacía)"); continue
-        if entrada.startswith("/recordar "):
-            with ARCHIVO.open("a", encoding="utf-8") as f: f.write(f"- {entrada[10:]}\n")
-            print("Guardado."); continue
-        mensajes.append({"role": "user", "content": entrada})
-        try: salida = preguntar(mensajes)
-        except OSError: sys.exit("No conecto con Ollama. ¿Está corriendo `ollama serve`?")
-        mensajes.append({"role": "assistant", "content": salida})
+    print("Casanostra con memoria automática. /recordar <dato>, /memoria, /salir")
+    try:
+        while True:
+            try:
+                entrada = input("\nTú> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                break
+            if not entrada:
+                continue
+            if entrada == "/salir":
+                break
+            if entrada == "/memoria":
+                print(leer() or "(vacía)")
+                continue
+            if entrada.startswith("/recordar "):
+                anotar(f"- {entrada[len('/recordar '):]}")
+                print("Guardado.")
+                continue
+            mensajes.append({"role": "user", "content": entrada})
+            try:
+                salida = preguntar(mensajes)
+            except OSError:
+                sys.exit("No conecto con Ollama. ¿Está corriendo `ollama serve`?")
+            mensajes.append({"role": "assistant", "content": salida})
+    finally:
+        try:
+            resumen_automatico(mensajes)
+        except OSError:
+            pass
 
-if __name__ == "__main__": main()
-EOF
+
+if __name__ == "__main__":
+    main()
+
+CHAT_EOF
 
 cat > cerebro.py <<'EOF'
 #!/usr/bin/env python3
@@ -394,6 +469,38 @@ if __name__ == "__main__":
 
 BIBLIO_EOF
 
+cat > interfaz.sh <<'INTERFAZ_EOF'
+#!/usr/bin/env bash
+# Interfaz gráfica gratuita (Open WebUI) para tus modelos locales de Ollama.
+# Te da un chat tipo web con historial, subida de documentos y selector de
+# modelos (casanostra, maestro, forjador, alquimista...).
+# Uso: bash interfaz.sh
+set -e
+
+if command -v docker >/dev/null 2>&1; then
+  echo "Instalando Open WebUI con Docker..."
+  docker rm -f open-webui >/dev/null 2>&1 || true
+  docker run -d -p 3000:8080 \
+    --add-host=host.docker.internal:host-gateway \
+    -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+    -v open-webui:/app/backend/data \
+    --name open-webui --restart always \
+    ghcr.io/open-webui/open-webui:main
+  echo ""
+  echo "✅ Listo. Abre en tu navegador:  http://localhost:3000"
+  echo "   (la primera cuenta que crees será la de administrador; es local, no sale de tu PC)"
+else
+  echo "Docker no encontrado; instalando con pip (necesita Python 3.11 o superior)..."
+  python3 -m pip install --user open-webui || pip3 install --user open-webui
+  echo ""
+  echo "✅ Instalado. Arranca la interfaz con:"
+  echo "     open-webui serve"
+  echo "   y abre en tu navegador:  http://localhost:8080"
+fi
+
+INTERFAZ_EOF
+chmod +x interfaz.sh
+
 # --------------------------------------------- 5. Descargar modelo y crear todo
 echo "[5/6] Descargando ${BASE} y creando los asistentes (puede tardar varios minutos)..."
 ollama pull "${BASE}"
@@ -418,6 +525,7 @@ echo "  python3 $DIR/chat_memoria.py     → chat con memoria persistente"
 echo "  python3 $DIR/cerebro.py \"objetivo\"  → agente autónomo con equipo"
 echo "  python3 $DIR/biblioteca.py indexar <carpeta>  → indexar tus documentos"
 echo "  python3 $DIR/biblioteca.py \"pregunta\"          → preguntar a tus documentos"
+echo "  bash $DIR/interfaz.sh                  → interfaz gráfica web (Open WebUI)"
 echo ""
 echo "CLAUDE CODE (necesita cuenta de Claude; tu plan pone los límites):"
 echo "  1. Abre un terminal NUEVO (para que cargue el PATH)"

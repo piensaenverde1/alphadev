@@ -94,6 +94,23 @@ python3 biblioteca.py "¿qué dicen mis apuntes sobre fondos indexados?"
 Sin dependencias externas y 100% local: tus documentos nunca salen de tu
 ordenador.
 
+## Interfaz gráfica web (Open WebUI)
+
+```bash
+bash interfaz.sh
+```
+
+Instala Open WebUI (con Docker si lo tienes; si no, con pip) y te da un chat
+tipo web en http://localhost:3000 con historial, subida de documentos y
+selector de modelos. Todo local.
+
+## Memoria automática
+
+`chat_memoria.py` ahora guarda memoria él solo: al salir de cada sesión, el
+propio modelo resume la conversación (decisiones, datos, tareas pendientes) y
+lo añade a `memoria.md`, que se carga automáticamente la próxima vez. El
+comando `/recordar` sigue disponible para guardar cosas a mano.
+
 ## Instalador todo-en-uno
 
 `instalar_todo.sh` es auto-contenido (incluye dentro todos los archivos de

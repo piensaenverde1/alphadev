@@ -1,97 +1,116 @@
 #!/usr/bin/env python3
-"""Chat con memoria persistente para el asistente local "casanostra" (Ollama).
+"""Chat con memoria persistente y AUTOMÁTICA para casanostra.
 
-Los modelos locales olvidan todo al cerrar la sesión. Este script añade una
-memoria en un archivo de texto plano (memoria.md) que se inyecta en cada
-conversación, imitando la memoria entre sesiones de los asistentes de pago.
+- /recordar <texto>  guarda un dato a mano
+- /memoria           muestra la memoria actual
+- /salir             termina la sesión
+- Al salir, el propio modelo resume la conversación y guarda lo importante
+  en memoria.md sin que tengas que hacer nada (memoria automática).
 
-Uso:
-    python3 chat_memoria.py
-
-Comandos dentro del chat:
-    /recordar <texto>   guarda un dato en la memoria permanente
-    /memoria            muestra la memoria actual
-    /salir              termina la sesión
-Requiere: pip install requests  (y tener `ollama serve` corriendo)
+Sin dependencias: solo la librería estándar de Python.
 """
 
 import json
 import sys
+from datetime import date
 from pathlib import Path
-
-import requests
+from urllib import request as urlreq
 
 MODELO = "casanostra"
 URL = "http://localhost:11434/api/chat"
-ARCHIVO_MEMORIA = Path(__file__).parent / "memoria.md"
+ARCHIVO = Path(__file__).parent / "memoria.md"
 
 
-def leer_memoria() -> str:
-    if ARCHIVO_MEMORIA.exists():
-        return ARCHIVO_MEMORIA.read_text(encoding="utf-8")
-    return ""
+def leer() -> str:
+    return ARCHIVO.read_text(encoding="utf-8") if ARCHIVO.exists() else ""
 
 
-def guardar_recuerdo(texto: str) -> None:
-    with ARCHIVO_MEMORIA.open("a", encoding="utf-8") as f:
-        f.write(f"- {texto}\n")
+def anotar(texto: str) -> None:
+    with ARCHIVO.open("a", encoding="utf-8") as f:
+        f.write(texto.rstrip() + "\n")
 
 
-def preguntar(mensajes: list[dict]) -> str:
-    """Envía la conversación a Ollama y muestra la respuesta en streaming."""
+def preguntar(mensajes: list[dict], stream: bool = True) -> str:
+    datos = json.dumps({"model": MODELO, "messages": mensajes, "stream": stream}).encode()
+    req = urlreq.Request(URL, data=datos, headers={"Content-Type": "application/json"})
+    if not stream:
+        with urlreq.urlopen(req, timeout=600) as r:
+            return json.loads(r.read())["message"]["content"].strip()
     respuesta = ""
-    with requests.post(
-        URL,
-        json={"model": MODELO, "messages": mensajes, "stream": True},
-        stream=True,
-        timeout=600,
-    ) as r:
-        r.raise_for_status()
-        for linea in r.iter_lines():
-            if not linea:
+    with urlreq.urlopen(req, timeout=600) as r:
+        for linea in r:
+            if not linea.strip():
                 continue
-            trozo = json.loads(linea)
-            texto = trozo.get("message", {}).get("content", "")
+            texto = json.loads(linea).get("message", {}).get("content", "")
             print(texto, end="", flush=True)
             respuesta += texto
     print()
     return respuesta
 
 
+def resumen_automatico(mensajes: list[dict]) -> None:
+    """Memoria automática: al salir, el modelo resume la sesión y la guarda."""
+    charla = [m for m in mensajes if m["role"] != "system"]
+    if len(charla) < 2:
+        return
+    print("\nGuardando memoria automática...")
+    transcripcion = "\n".join(f"{m['role']}: {m['content']}" for m in charla)
+    resumen = preguntar(
+        [
+            {
+                "role": "system",
+                "content": (
+                    "Resume esta conversación en un máximo de 5 viñetas con SOLO "
+                    "los datos útiles para el futuro: decisiones tomadas, datos "
+                    "personales o del proyecto, tareas pendientes y preferencias "
+                    "del usuario. Si no hay nada que valga la pena recordar, "
+                    "responde exactamente NADA."
+                ),
+            },
+            {"role": "user", "content": transcripcion[-8000:]},
+        ],
+        stream=False,
+    )
+    if resumen.upper().strip() != "NADA":
+        anotar(f"\n## Sesión {date.today()}\n{resumen}")
+        print(f"Memoria guardada en {ARCHIVO}")
+
+
 def main() -> None:
-    memoria = leer_memoria()
     sistema = "Continúa la conversación con el usuario."
+    memoria = leer()
     if memoria:
-        sistema += (
-            "\n\nMemoria de sesiones anteriores (datos que el usuario pidió recordar):\n"
-            + memoria
-        )
+        sistema += "\n\nMemoria de sesiones anteriores:\n" + memoria
     mensajes = [{"role": "system", "content": sistema}]
-
-    print("Casanostra local con memoria. Escribe /salir para terminar.")
-    while True:
+    print("Casanostra con memoria automática. /recordar <dato>, /memoria, /salir")
+    try:
+        while True:
+            try:
+                entrada = input("\nTú> ").strip()
+            except (EOFError, KeyboardInterrupt):
+                break
+            if not entrada:
+                continue
+            if entrada == "/salir":
+                break
+            if entrada == "/memoria":
+                print(leer() or "(vacía)")
+                continue
+            if entrada.startswith("/recordar "):
+                anotar(f"- {entrada[len('/recordar '):]}")
+                print("Guardado.")
+                continue
+            mensajes.append({"role": "user", "content": entrada})
+            try:
+                salida = preguntar(mensajes)
+            except OSError:
+                sys.exit("No conecto con Ollama. ¿Está corriendo `ollama serve`?")
+            mensajes.append({"role": "assistant", "content": salida})
+    finally:
         try:
-            entrada = input("\nTú> ").strip()
-        except (EOFError, KeyboardInterrupt):
-            break
-        if not entrada:
-            continue
-        if entrada == "/salir":
-            break
-        if entrada == "/memoria":
-            print(leer_memoria() or "(memoria vacía)")
-            continue
-        if entrada.startswith("/recordar "):
-            guardar_recuerdo(entrada[len("/recordar "):])
-            print("Guardado en memoria.md")
-            continue
-
-        mensajes.append({"role": "user", "content": entrada})
-        try:
-            salida = preguntar(mensajes)
-        except requests.ConnectionError:
-            sys.exit("No se pudo conectar con Ollama. ¿Está corriendo `ollama serve`?")
-        mensajes.append({"role": "assistant", "content": salida})
+            resumen_automatico(mensajes)
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":
