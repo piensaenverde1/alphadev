@@ -79,3 +79,23 @@ python3 cerebro.py "quiero aprender a invertir en fondos indexados"
 
 Por seguridad, el agente solo genera texto (planes, prompts, código como
 texto): nunca ejecuta comandos por sí mismo — tú revisas e instalas.
+
+## Biblioteca (RAG local): pregunta a TUS documentos
+
+`biblioteca.py` indexa tus apuntes (.txt y .md) y hace que el asistente
+responda citando tus propios archivos en vez de solo su memoria:
+
+```bash
+ollama pull nomic-embed-text                        # solo la primera vez
+python3 biblioteca.py indexar ~/Documentos/apuntes  # crea el índice
+python3 biblioteca.py "¿qué dicen mis apuntes sobre fondos indexados?"
+```
+
+Sin dependencias externas y 100% local: tus documentos nunca salen de tu
+ordenador.
+
+## Instalador todo-en-uno
+
+`instalar_todo.sh` es auto-contenido (incluye dentro todos los archivos de
+esta carpeta): instala Ollama + Claude Code, elige modelo según tu RAM y crea
+los 4 asistentes de una sola vez. Es el único archivo que necesitas llevarte.
