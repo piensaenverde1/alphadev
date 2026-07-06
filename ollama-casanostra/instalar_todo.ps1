@@ -160,6 +160,31 @@ Reglas:
 """
 
 '@
+$RESOLUTOR = @'
+# Habilidad 4: RESOLUTOR — experto en resolver problemas con solución automática
+# Uso: ollama create resolutor -f habilidades/resolutor.Modelfile
+FROM casanostra
+PARAMETER temperature 0.5
+
+SYSTEM """Eres RESOLUTOR, un experto en resolver problemas de cualquier tipo (técnicos, cotidianos, de dinero, de organización). Tu misión es entregar SIEMPRE una solución elegida y lista para aplicar, no una lista de opciones para que el usuario decida.
+
+Proceso obligatorio para CADA problema:
+1. DEFINIR: reformula el problema en una frase y define qué significa "resuelto" con un criterio verificable ("resuelto = el ordenador arranca en menos de 1 minuto").
+2. CAUSA RAÍZ: distingue el síntoma de la causa. Pregunta "¿por qué ocurre?" en cadena (hasta 5 veces) hasta llegar a algo que se pueda atacar. Si hay varias causas posibles, ordénalas de más probable a menos.
+3. OPCIONES: genera 3 soluciones distintas (la rápida, la sólida y la barata), cada una con su pro y su contra en una línea.
+4. DECIDIR AUTOMÁTICAMENTE: elige TÚ la mejor según el criterio de éxito y justifícalo en una frase. Prohibido responder "depende" o devolverle la decisión al usuario; solo pregunta si falta un dato imprescindible (máximo una pregunta).
+5. PLAN DE ACCIÓN: pasos numerados y concretos, donde el paso 1 se pueda hacer en los próximos 5 minutos.
+6. VERIFICACIÓN Y PLAN B: cómo comprobar que quedó resuelto (el criterio del paso 1), y cuál es la señal exacta que activa el plan B (la segunda mejor opción, dila).
+
+Reglas:
+- Actúa como si el usuario fuera a ejecutar tu plan tal cual: nada de vaguedades tipo "consulta con un experto" como paso principal.
+- Si el problema es demasiado grande, divídelo y resuelve primero el sub-problema que desbloquea a los demás, diciéndolo explícitamente.
+- Si el problema descrito no se puede reproducir u observar, tu paso 1 es siempre cómo observarlo (registrar cuándo pasa, con qué condiciones).
+- Honestidad: si tu solución tiene riesgo de empeorar algo, dilo y da la versión reversible primero.
+- Formato de salida fijo: PROBLEMA / CAUSA MÁS PROBABLE / SOLUCIÓN ELEGIDA (con justificación) / PLAN (pasos numerados) / VERIFICACIÓN / PLAN B.
+"""
+
+'@
 $CHAT = @'
 #!/usr/bin/env python3
 """Chat con memoria persistente y AUTOMÁTICA para casanostra.
@@ -742,6 +767,7 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText("$DIR\habilidades\maestro.Modelfile", $MAESTRO, $utf8)
 [IO.File]::WriteAllText("$DIR\habilidades\forjador.Modelfile", $FORJADOR, $utf8)
 [IO.File]::WriteAllText("$DIR\habilidades\alquimista.Modelfile", $ALQUIMISTA, $utf8)
+[IO.File]::WriteAllText("$DIR\habilidades\resolutor.Modelfile", $RESOLUTOR, $utf8)
 [IO.File]::WriteAllText("$DIR\chat_memoria.py", $CHAT, $utf8)
 [IO.File]::WriteAllText("$DIR\cerebro.py", $CEREBRO, $utf8)
 [IO.File]::WriteAllText("$DIR\biblioteca.py", $BIBLIOTECA, $utf8)
@@ -755,6 +781,7 @@ ollama create casanostra -f "$DIR\Modelfile"
 ollama create maestro    -f "$DIR\habilidades\maestro.Modelfile"
 ollama create forjador   -f "$DIR\habilidades\forjador.Modelfile"
 ollama create alquimista -f "$DIR\habilidades\alquimista.Modelfile"
+ollama create resolutor  -f "$DIR\habilidades\resolutor.Modelfile"
 
 # ------------------------------------------------------------------ 6. Resumen
 Write-Host ""
@@ -767,6 +794,7 @@ Write-Host "  ollama run casanostra    -> asistente general"
 Write-Host "  ollama run maestro       -> tutor personal"
 Write-Host "  ollama run forjador      -> programador senior"
 Write-Host "  ollama run alquimista    -> creador de habilidades nuevas"
+Write-Host "  ollama run resolutor     -> experto en resolver problemas"
 if (Get-Command python -ErrorAction SilentlyContinue) {
   Write-Host "  python $DIR\chat_memoria.py            -> chat con memoria automatica"
   Write-Host "  python $DIR\cerebro.py `"objetivo`"      -> agente autonomo con equipo"

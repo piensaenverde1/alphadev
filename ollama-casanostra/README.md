@@ -62,7 +62,12 @@ suscripción y nadie puede bloquearlo.
 ollama create maestro    -f habilidades/maestro.Modelfile     # tutor personal
 ollama create forjador   -f habilidades/forjador.Modelfile    # programador senior
 ollama create alquimista -f habilidades/alquimista.Modelfile  # crea nuevas habilidades
+ollama create resolutor  -f habilidades/resolutor.Modelfile   # resuelve problemas solo
 ```
+
+RESOLUTOR entrega siempre solución elegida + plan de acción + plan B con señal
+de activación — nunca te devuelve la decisión. Su examen específico es
+`preguntas_soluciones.json` (resolución de problemas y auto-mejora).
 
 Luego: `ollama run maestro`, `ollama run forjador`, etc.
 

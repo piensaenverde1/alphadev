@@ -1,0 +1,22 @@
+[
+  {"pregunta": "Tu ordenador va lento desde ayer. Describe paso a paso tu proceso para encontrar la causa antes de tocar nada.",
+   "criterios": "Debe empezar por '¿qué cambió ayer?' (instalaciones, actualizaciones), observar/medir (administrador de tareas, qué proceso consume), aislar variables una a una, y NO proponer reinstalar o formatear a ciegas como primer paso."},
+  {"pregunta": "Aplica la técnica de los 5 porqués a este problema: 'Siempre llego tarde al trabajo'. Inventa una cadena plausible completa.",
+   "criterios": "Cadena encadenada de al menos 3-5 porqués que termina en una causa raíz ATACABLE (un hábito o decisión concreta), no en una excusa genérica."},
+  {"pregunta": "Explica la diferencia entre síntoma y causa raíz con un ejemplo cotidiano concreto.",
+   "criterios": "Definición correcta de ambos y un ejemplo donde se vea que atacar el síntoma no evita que el problema vuelva (p.ej. tomar analgésico vs corregir postura)."},
+  {"pregunta": "Tienes dos soluciones para un problema: una rápida pero frágil y una lenta pero sólida. ¿Con qué criterios decides cuál aplicar?",
+   "criterios": "Debe mencionar reversibilidad de la decisión, urgencia/coste de esperar, y coste del error si falla. Idealmente: rápida si es reversible y urgente; sólida si el error es caro o la decisión irreversible."},
+  {"pregunta": "Una lámpara no enciende. Ordena los pasos de diagnóstico del más barato al más caro.",
+   "criterios": "Orden lógico de aislamiento: interruptor/enchufada, probar la bombilla en otra lámpara (sustitución), probar otro aparato en ese enchufe, revisar el cuadro eléctrico, y solo al final electricista. Debe cambiar una variable cada vez."},
+  {"pregunta": "Divide el problema 'quiero ahorrar más dinero' en 3 sub-problemas concretos y atacables, y di cuál atacarías primero y por qué.",
+   "criterios": "3 sub-problemas medibles (saber en qué se va el dinero, reducir un gasto concreto, automatizar ahorro...) y una elección justificada, típicamente empezar por medir/registrar gastos porque desbloquea los demás."},
+  {"pregunta": "¿Qué es un plan B bien definido? Da un ejemplo que incluya la señal exacta que lo activa.",
+   "criterios": "Plan B = segunda mejor opción decidida ANTES de ejecutar el plan A, con una señal concreta y verificable de activación (fecha límite o umbral medible), no 'si va mal ya veremos'."},
+  {"pregunta": "Diseña un bucle de auto-mejora semanal en 4 pasos para cualquier hábito.",
+   "criterios": "Debe incluir: medir algo concreto, retrospectiva (qué funcionó/qué no), elegir UN solo cambio para la semana siguiente, y volver a medir/registrar lo aprendido."},
+  {"pregunta": "Un fallo ocurre solo de vez en cuando y nunca cuando lo estás mirando. ¿Cuál es tu estrategia para cazarlo?",
+   "criterios": "Registrar cada aparición (fecha, hora, condiciones, qué se estaba haciendo) para encontrar el patrón; intentar aumentar la frecuencia reproduciendo las condiciones; no concluir nada de un solo caso."},
+  {"pregunta": "Tu script de 100 líneas falla sin mensaje de error claro. Explica cómo usar la bisección para encontrar la línea culpable y cuántos pasos te costaría aproximadamente.",
+   "criterios": "Dividir por mitades (comentar/aislar mitad del código o poner una traza en medio), decidir en qué mitad está el fallo, repetir. Aproximadamente log2(100) ≈ 7 pasos."}
+]
