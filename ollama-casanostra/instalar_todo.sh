@@ -269,77 +269,169 @@ CHAT_EOF
 
 cat > cerebro.py <<'EOF'
 #!/usr/bin/env python3
-"""CEREBRO — agente autónomo local con equipo: estratega → alquimista → equipo → crítico.
-Uso: python3 cerebro.py "tu objetivo". Solo genera texto; nunca ejecuta comandos.
-Guarda informe + Modelfiles de habilidades nuevas en habilidades_generadas/."""
-import json, re, sys, unicodedata
+"""CEREBRO — agente autónomo local que se mejora a sí mismo creando habilidades.
+
+Le das un objetivo ("quiero aprender inversión en índices", "mejora mi forma de
+escribir emails") y el agente, de forma autónoma y 100% gratuita/local:
+
+  1. ESTRATEGA  analiza el objetivo y decide qué equipo de especialistas crear.
+  2. ALQUIMISTA escribe el prompt de sistema de cada especialista (genera
+     prompts automáticamente — esto es el "código que genera prompts").
+  3. EQUIPO     cada especialista trabaja su parte de la misión.
+  4. CRÍTICO    revisa el resultado; si no aprueba, el equipo itera (máx. 3).
+  5. Guarda el informe final y un Modelfile por especialista en
+     habilidades_generadas/, listos para instalar con `ollama create`.
+
+Uso:
+    python3 cerebro.py "tu objetivo aquí"
+    python3 cerebro.py            # te lo pregunta
+
+Requiere: `ollama serve` corriendo y `pip install requests`.
+Seguridad: este agente solo genera TEXTO (prompts, planes, código como texto).
+Nunca ejecuta código ni comandos por sí mismo — tú revisas y decides.
+"""
+
+import re
+import sys
+import unicodedata
 from datetime import date
 from pathlib import Path
-from urllib import request as urlreq
 
-MODELO, URL = "casanostra", "http://localhost:11434/api/chat"
-MAX_ITER, MAX_ESP = 3, 3
-SALIDA = Path(__file__).parent / "habilidades_generadas"
+import requests
 
-def llamar(sistema, usuario):
-    datos = json.dumps({"model": MODELO, "stream": False, "messages": [
-        {"role": "system", "content": sistema}, {"role": "user", "content": usuario}]}).encode()
-    req = urlreq.Request(URL, data=datos, headers={"Content-Type": "application/json"})
-    with urlreq.urlopen(req, timeout=900) as r:
-        return json.loads(r.read())["message"]["content"].strip()
+MODELO = "casanostra"           # cámbialo por tu modelo si usas otro
+URL = "http://localhost:11434/api/chat"
+MAX_ITERACIONES = 3
+MAX_ESPECIALISTAS = 3
+CARPETA_SALIDA = Path(__file__).parent / "habilidades_generadas"
 
-def slug(t):
-    t = unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")[:40] or "habilidad"
 
-ESTRATEGA = """Eres ESTRATEGA, coordinador de un equipo de agentes de IA. Dado un objetivo,
-decide el equipo mínimo (1 a 3 especialistas). Responde SOLO líneas con este formato:
-ESPECIALISTA: <nombre de una palabra> | <misión concreta en una frase>"""
-ALQUIMISTA = """Eres ALQUIMISTA, ingeniero de prompts. Te doy nombre y misión de un especialista.
-Escribe SOLO su prompt de sistema: identidad en una frase, proceso numerado, 4 reglas concretas
-y verificables, formato de salida, y obligación de admitir incertidumbre en vez de inventar."""
-CRITICO = """Eres CRÍTICO, revisor implacable pero justo. Evalúa si el trabajo cumple el objetivo.
-Primera línea EXACTA: "VEREDICTO: APROBADO" o "VEREDICTO: MEJORAR". Si es MEJORAR, lista
-numerada de mejoras concretas (máximo 5). Nada cosmético."""
+def llamar(sistema: str, usuario: str) -> str:
+    """Una llamada al modelo local con un rol de sistema dado."""
+    r = requests.post(
+        URL,
+        json={
+            "model": MODELO,
+            "messages": [
+                {"role": "system", "content": sistema},
+                {"role": "user", "content": usuario},
+            ],
+            "stream": False,
+        },
+        timeout=900,
+    )
+    r.raise_for_status()
+    return r.json()["message"]["content"].strip()
 
-def main():
+
+def slug(texto: str) -> str:
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", texto.lower()).strip("-")[:40] or "habilidad"
+
+
+# ---------------------------------------------------------------- roles fijos
+
+ESTRATEGA = """Eres ESTRATEGA, el coordinador de un equipo de agentes de IA.
+Dado un objetivo del usuario, decide el equipo mínimo necesario (1 a 3
+especialistas, nunca más). Responde EXACTAMENTE en este formato, una línea por
+especialista y nada más:
+
+ESPECIALISTA: <nombre corto de una palabra> | <su misión concreta en una frase>
+
+Elige especialistas complementarios, no redundantes."""
+
+ALQUIMISTA = """Eres ALQUIMISTA, ingeniero de prompts. Te doy el nombre y la
+misión de un especialista. Escribe SOLO su prompt de sistema (sin explicaciones
+alrededor): identidad en una frase, proceso en pasos numerados, 4 reglas
+concretas y verificables, formato de salida, y la obligación de admitir
+incertidumbre en vez de inventar. En el idioma de la misión."""
+
+CRITICO = """Eres CRÍTICO, revisor implacable pero justo. Te doy un objetivo y
+el trabajo de un equipo. Evalúa si el trabajo cumple el objetivo.
+Primera línea EXACTA: "VEREDICTO: APROBADO" o "VEREDICTO: MEJORAR".
+Si es MEJORAR, añade una lista numerada de mejoras concretas y accionables
+(máximo 5). No propongas mejoras cosméticas."""
+
+
+# ---------------------------------------------------------------- flujo
+
+def main() -> None:
     objetivo = " ".join(sys.argv[1:]).strip() or input("¿Cuál es tu objetivo? ").strip()
-    if not objetivo: sys.exit("Necesito un objetivo.")
-    print(f"\n🧠 CEREBRO trabajando en: {objetivo}\n\n1/4 ESTRATEGA diseñando el equipo...")
+    if not objetivo:
+        sys.exit("Necesito un objetivo.")
+
+    print(f"\n🧠 CEREBRO trabajando en: {objetivo}\n")
+
+    # 1. El estratega diseña el equipo
+    print("1/4 ESTRATEGA diseñando el equipo...")
     plan = llamar(ESTRATEGA, f"Objetivo del usuario: {objetivo}")
-    equipo = re.findall(r"ESPECIALISTA:\s*([^|]+)\|\s*(.+)", plan)[:MAX_ESP] or \
-             [("generalista", f"Resolver de la mejor forma posible: {objetivo}")]
-    for n, m in equipo: print(f"   → {n.strip()}: {m.strip()}")
+    equipo = re.findall(r"ESPECIALISTA:\s*([^|]+)\|\s*(.+)", plan)[:MAX_ESPECIALISTAS]
+    if not equipo:
+        equipo = [("generalista", f"Resolver de la mejor forma posible: {objetivo}")]
+    for nombre, mision in equipo:
+        print(f"   → {nombre.strip()}: {mision.strip()}")
+
+    # 2. El alquimista genera automáticamente el prompt de cada especialista
     print("\n2/4 ALQUIMISTA generando los prompts del equipo...")
-    prompts = {n.strip(): llamar(ALQUIMISTA, f"Especialista: {n.strip()}\nMisión: {m.strip()}")
-               for n, m in equipo}
-    critica, trabajo = "", ""
-    for i in range(1, MAX_ITER + 1):
-        print(f"\n3/4 EQUIPO trabajando (iteración {i})...")
-        partes = []
-        for n, m in equipo:
-            n = n.strip()
-            encargo = f"Objetivo global: {objetivo}\nTu misión: {m.strip()}"
-            if critica: encargo += f"\n\nMejoras exigidas por el revisor:\n{critica}"
-            partes.append(f"## Aporte de {n}\n\n{llamar(prompts[n], encargo)}")
-        trabajo = "\n\n".join(partes)
+    prompts = {}
+    for nombre, mision in equipo:
+        nombre = nombre.strip()
+        prompts[nombre] = llamar(
+            ALQUIMISTA, f"Especialista: {nombre}\nMisión: {mision.strip()}"
+        )
+        print(f"   → prompt de {nombre} listo")
+
+    # 3-4. El equipo trabaja y el crítico revisa (bucle autónomo acotado)
+    critica = ""
+    trabajo = ""
+    for iteracion in range(1, MAX_ITERACIONES + 1):
+        print(f"\n3/4 EQUIPO trabajando (iteración {iteracion})...")
+        resultados = []
+        for nombre, mision in equipo:
+            nombre = nombre.strip()
+            encargo = f"Objetivo global: {objetivo}\nTu misión: {mision.strip()}"
+            if critica:
+                encargo += f"\n\nMejoras exigidas por el revisor:\n{critica}"
+            resultados.append(f"## Aporte de {nombre}\n\n{llamar(prompts[nombre], encargo)}")
+        trabajo = "\n\n".join(resultados)
+
         print("4/4 CRÍTICO revisando...")
-        v = llamar(CRITICO, f"Objetivo: {objetivo}\n\nTrabajo del equipo:\n{trabajo}")
-        if v.upper().startswith("VEREDICTO: APROBADO"): print("   ✅ Aprobado."); break
-        critica = v.partition("\n")[2].strip(); print("   🔁 El crítico pide mejoras; el equipo itera.")
-    carpeta = SALIDA / f"{date.today()}-{slug(objetivo)}"
+        veredicto = llamar(CRITICO, f"Objetivo: {objetivo}\n\nTrabajo del equipo:\n{trabajo}")
+        if veredicto.upper().startswith("VEREDICTO: APROBADO"):
+            print("   ✅ Aprobado.")
+            break
+        critica = veredicto.partition("\n")[2].strip()
+        print("   🔁 El crítico pide mejoras; el equipo itera.")
+
+    # 5. Guardar informe + habilidades instalables
+    carpeta = CARPETA_SALIDA / f"{date.today()}-{slug(objetivo)}"
     carpeta.mkdir(parents=True, exist_ok=True)
     (carpeta / "informe.md").write_text(
-        f"# Objetivo\n\n{objetivo}\n\n# Resultado del equipo\n\n{trabajo}\n", encoding="utf-8")
-    for n, p in prompts.items():
-        (carpeta / f"{slug(n)}.Modelfile").write_text(
-            f'FROM {MODELO}\nPARAMETER temperature 0.6\n\nSYSTEM """{p}"""\n', encoding="utf-8")
-    print(f"\n📁 Guardado en: {carpeta}\n   informe.md + un .Modelfile por especialista")
-    print(f"   Instalar: ollama create <nombre> -f {carpeta}/<nombre>.Modelfile")
+        f"# Objetivo\n\n{objetivo}\n\n# Resultado del equipo\n\n{trabajo}\n",
+        encoding="utf-8",
+    )
+    for nombre in prompts:
+        modelfile = (
+            f"FROM {MODELO}\n"
+            "PARAMETER num_ctx 16384\n"
+            "PARAMETER temperature 0.6\n\n"
+            f'SYSTEM """{prompts[nombre]}"""\n'
+        )
+        (carpeta / f"{slug(nombre)}.Modelfile").write_text(modelfile, encoding="utf-8")
+
+    print(f"\n📁 Todo guardado en: {carpeta}")
+    print("   - informe.md            → el resultado del trabajo")
+    print("   - *.Modelfile           → habilidades nuevas generadas automáticamente")
+    print("\nPara instalar una habilidad generada:")
+    print(f"   ollama create <nombre> -f {carpeta}/<nombre>.Modelfile")
+
 
 if __name__ == "__main__":
-    try: main()
-    except OSError: sys.exit("No conecto con Ollama. ¿Está corriendo `ollama serve`?")
+    try:
+        main()
+    except requests.ConnectionError:
+        sys.exit("No se pudo conectar con Ollama. ¿Está corriendo `ollama serve`?")
+
 EOF
 
 cat > biblioteca.py <<'BIBLIO_EOF'
@@ -556,11 +648,17 @@ EXAMEN_POR_DEFECTO = [
 ]
 
 
+def limpiar(texto: str) -> str:
+    """Quita los bloques de razonamiento <think>...</think> que emiten
+    modelos como qwen3, para que no contaminen respuestas ni correcciones."""
+    return re.sub(r"<think>.*?</think>", "", texto, flags=re.S).strip()
+
+
 def llamar(modelo: str, mensajes: list[dict]) -> str:
     datos = json.dumps({"model": modelo, "messages": mensajes, "stream": False}).encode()
     req = urlreq.Request(URL, data=datos, headers={"Content-Type": "application/json"})
     with urlreq.urlopen(req, timeout=900) as r:
-        return json.loads(r.read())["message"]["content"].strip()
+        return limpiar(json.loads(r.read())["message"]["content"])
 
 
 def cargar_preguntas() -> list[dict]:
@@ -587,10 +685,10 @@ def corregir(pregunta: str, criterios: str, respuesta: str) -> int:
             f"PREGUNTA: {pregunta}\n\nCRITERIOS: {criterios}\n\nRESPUESTA DEL ALUMNO:\n{respuesta}"
         )},
     ])
-    m = re.search(r"NOTA:\s*(\d+(?:[.,]\d+)?)", veredicto)
-    if not m:
-        return 0
-    nota = float(m.group(1).replace(",", "."))
+    notas = re.findall(r"NOTA:\s*(\d+(?:[.,]\d+)?)", veredicto)
+    if not notas:
+        return -1  # el juez no dio nota parseable: se marca, no se puntúa como 0
+    nota = float(notas[-1].replace(",", "."))
     return max(0, min(10, round(nota)))
 
 
@@ -604,8 +702,10 @@ def examinar(modelo: str, preguntas: list[dict]) -> list[int]:
             sys.exit(f"Error hablando con Ollama ({e}). ¿Está corriendo? ¿Existe el modelo '{modelo}'?")
         nota = corregir(p["pregunta"], p["criterios"], respuesta)
         notas.append(nota)
-        print(f"  P{i:02d}: {nota}/10  - {p['pregunta'][:60]}...")
-    media = sum(notas) / len(notas)
+        etiqueta = f"{nota}/10" if nota >= 0 else "sin nota (juez no contestó bien)"
+        print(f"  P{i:02d}: {etiqueta}  - {p['pregunta'][:60]}...")
+    validas = [n for n in notas if n >= 0] or [0]
+    media = sum(validas) / len(validas)
     print(f"  NOTA MEDIA de {modelo}: {media:.1f}/10")
     return notas
 
@@ -619,9 +719,10 @@ def guardar(resultados: dict[str, list[int]], num_preguntas: int) -> None:
                     " | ".join(f"P{i}" for i in range(1, num_preguntas + 1)) + " |\n")
             f.write("|---" * (num_preguntas + 3) + "|\n")
         for modelo, notas in resultados.items():
-            media = sum(notas) / len(notas)
+            validas = [n for n in notas if n >= 0] or [0]
+            media = sum(validas) / len(validas)
             f.write(f"| {date.today()} | {modelo} | {media:.1f} | " +
-                    " | ".join(str(n) for n in notas) + " |\n")
+                    " | ".join(str(n) if n >= 0 else "?" for n in notas) + " |\n")
     print(f"\nHistorial actualizado en {RESULTADOS.name}")
 
 
@@ -632,9 +733,12 @@ def main() -> None:
     guardar(resultados, len(preguntas))
     if len(resultados) > 1:
         print("\n=== CLASIFICACION ===")
-        orden = sorted(resultados.items(), key=lambda x: -sum(x[1]))
+        def media_de(notas):
+            validas = [n for n in notas if n >= 0] or [0]
+            return sum(validas) / len(validas)
+        orden = sorted(resultados.items(), key=lambda x: -media_de(x[1]))
         for puesto, (modelo, notas) in enumerate(orden, 1):
-            print(f"  {puesto}. {modelo}: {sum(notas)/len(notas):.1f}/10")
+            print(f"  {puesto}. {modelo}: {media_de(notas):.1f}/10")
 
 
 if __name__ == "__main__":

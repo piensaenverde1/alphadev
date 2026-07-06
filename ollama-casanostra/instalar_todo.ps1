@@ -627,11 +627,17 @@ EXAMEN_POR_DEFECTO = [
 ]
 
 
+def limpiar(texto: str) -> str:
+    """Quita los bloques de razonamiento <think>...</think> que emiten
+    modelos como qwen3, para que no contaminen respuestas ni correcciones."""
+    return re.sub(r"<think>.*?</think>", "", texto, flags=re.S).strip()
+
+
 def llamar(modelo: str, mensajes: list[dict]) -> str:
     datos = json.dumps({"model": modelo, "messages": mensajes, "stream": False}).encode()
     req = urlreq.Request(URL, data=datos, headers={"Content-Type": "application/json"})
     with urlreq.urlopen(req, timeout=900) as r:
-        return json.loads(r.read())["message"]["content"].strip()
+        return limpiar(json.loads(r.read())["message"]["content"])
 
 
 def cargar_preguntas() -> list[dict]:
@@ -658,10 +664,10 @@ def corregir(pregunta: str, criterios: str, respuesta: str) -> int:
             f"PREGUNTA: {pregunta}\n\nCRITERIOS: {criterios}\n\nRESPUESTA DEL ALUMNO:\n{respuesta}"
         )},
     ])
-    m = re.search(r"NOTA:\s*(\d+(?:[.,]\d+)?)", veredicto)
-    if not m:
-        return 0
-    nota = float(m.group(1).replace(",", "."))
+    notas = re.findall(r"NOTA:\s*(\d+(?:[.,]\d+)?)", veredicto)
+    if not notas:
+        return -1  # el juez no dio nota parseable: se marca, no se puntúa como 0
+    nota = float(notas[-1].replace(",", "."))
     return max(0, min(10, round(nota)))
 
 
@@ -675,8 +681,10 @@ def examinar(modelo: str, preguntas: list[dict]) -> list[int]:
             sys.exit(f"Error hablando con Ollama ({e}). ¿Está corriendo? ¿Existe el modelo '{modelo}'?")
         nota = corregir(p["pregunta"], p["criterios"], respuesta)
         notas.append(nota)
-        print(f"  P{i:02d}: {nota}/10  - {p['pregunta'][:60]}...")
-    media = sum(notas) / len(notas)
+        etiqueta = f"{nota}/10" if nota >= 0 else "sin nota (juez no contestó bien)"
+        print(f"  P{i:02d}: {etiqueta}  - {p['pregunta'][:60]}...")
+    validas = [n for n in notas if n >= 0] or [0]
+    media = sum(validas) / len(validas)
     print(f"  NOTA MEDIA de {modelo}: {media:.1f}/10")
     return notas
 
@@ -690,9 +698,10 @@ def guardar(resultados: dict[str, list[int]], num_preguntas: int) -> None:
                     " | ".join(f"P{i}" for i in range(1, num_preguntas + 1)) + " |\n")
             f.write("|---" * (num_preguntas + 3) + "|\n")
         for modelo, notas in resultados.items():
-            media = sum(notas) / len(notas)
+            validas = [n for n in notas if n >= 0] or [0]
+            media = sum(validas) / len(validas)
             f.write(f"| {date.today()} | {modelo} | {media:.1f} | " +
-                    " | ".join(str(n) for n in notas) + " |\n")
+                    " | ".join(str(n) if n >= 0 else "?" for n in notas) + " |\n")
     print(f"\nHistorial actualizado en {RESULTADOS.name}")
 
 
@@ -703,9 +712,12 @@ def main() -> None:
     guardar(resultados, len(preguntas))
     if len(resultados) > 1:
         print("\n=== CLASIFICACION ===")
-        orden = sorted(resultados.items(), key=lambda x: -sum(x[1]))
+        def media_de(notas):
+            validas = [n for n in notas if n >= 0] or [0]
+            return sum(validas) / len(validas)
+        orden = sorted(resultados.items(), key=lambda x: -media_de(x[1]))
         for puesto, (modelo, notas) in enumerate(orden, 1):
-            print(f"  {puesto}. {modelo}: {sum(notas)/len(notas):.1f}/10")
+            print(f"  {puesto}. {modelo}: {media_de(notas):.1f}/10")
 
 
 if __name__ == "__main__":
