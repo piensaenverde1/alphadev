@@ -123,6 +123,29 @@ cada respuesta. La primera vez crea `preguntas.json` — edítalo con preguntas
 de lo que TÚ uses. El historial queda en `resultados.md` para comparar
 modelos y prompts en el tiempo antes de cambiar nada a ciegas.
 
+## Conocimiento: educar al asistente (carpeta `conocimiento/`)
+
+Apuntes maestros de programación, ingeniería de prompts y bucles agénticos.
+Se indexan con la biblioteca RAG para que el asistente los CONSULTE al
+responder — la forma legítima de "darle conocimiento" a un modelo local:
+
+```bash
+python biblioteca.py indexar conocimiento
+python biblioteca.py "¿cómo depuro un bug por causa raíz?"
+```
+
+Añade tus propios .md a la carpeta y reindexa: cuanto mejores apuntes,
+mejor asistente.
+
+## Examen de programación (prueba de sistema propia)
+
+`preguntas_programacion.json` es un banco duro específico de código, prompts
+y bucles. Cualquier archivo .json pasado a examen.py se usa como banco:
+
+```bash
+python examen.py preguntas_programacion.json casanostra qwen2.5-coder
+```
+
 ## Instalador todo-en-uno
 
 `instalar_todo.sh` es auto-contenido (incluye dentro todos los archivos de

@@ -706,7 +706,18 @@ def guardar(resultados: dict[str, list[int]], num_preguntas: int) -> None:
 
 
 def main() -> None:
-    modelos = sys.argv[1:] or ["casanostra"]
+    global PREGUNTAS
+    args = sys.argv[1:]
+    # Un argumento .json es un banco de preguntas alternativo; el resto, modelos
+    bancos = [a for a in args if a.endswith(".json")]
+    modelos = [a for a in args if not a.endswith(".json")] or ["casanostra"]
+    if bancos:
+        ruta = Path(bancos[0])
+        if not ruta.exists():
+            ruta = CARPETA / bancos[0]
+        if not ruta.exists():
+            sys.exit(f"No encuentro el banco de preguntas: {bancos[0]}")
+        PREGUNTAS = ruta
     preguntas = cargar_preguntas()
     resultados = {m: examinar(m, preguntas) for m in modelos}
     guardar(resultados, len(preguntas))

@@ -1,0 +1,22 @@
+[
+  {"pregunta": "Escribe una función en Python que devuelva los N primeros números primos. Debe manejar N=0.",
+   "criterios": "Función correcta y ejecutable que devuelve lista de primos (2,3,5,7,...); con N=0 devuelve lista vacía sin error."},
+  {"pregunta": "¿Qué imprime este código y por qué?\nx = [1, 2, 3]\ny = x\ny.append(4)\nprint(x)",
+   "criterios": "Debe decir que imprime [1, 2, 3, 4] porque y = x no copia la lista: ambas variables referencian el mismo objeto."},
+  {"pregunta": "Encuentra el bug:\ndef media(numeros):\n    total = 0\n    for n in numeros:\n        total += n\n    return total / len(numeros)",
+   "criterios": "Debe detectar que con lista vacía falla por división entre cero (len=0), y proponer manejarlo (devolver 0, None o lanzar error claro)."},
+  {"pregunta": "¿Qué está mal en esta línea y cómo se arregla?\nquery = \"SELECT * FROM usuarios WHERE nombre = '\" + nombre_usuario + \"'\"",
+   "criterios": "Debe identificar inyección SQL y proponer consultas parametrizadas (placeholders ? o %s con parámetros separados). Concatenar entrada del usuario en SQL es la vulnerabilidad."},
+  {"pregunta": "¿Cuál es la complejidad de buscar un elemento en una lista de Python frente a buscarlo en un set, y qué implicación práctica tiene dentro de un bucle?",
+   "criterios": "Lista O(n), set/diccionario O(1). Dentro de un bucle, buscar en lista da O(n²) y conviene convertir a set para obtener O(n)."},
+  {"pregunta": "¿Por qué es peligroso def acumular(elemento, lista=[])? Explica y da la versión correcta.",
+   "criterios": "El valor por defecto mutable se crea UNA vez y se comparte entre llamadas. Correcto: lista=None y dentro 'if lista is None: lista = []'."},
+  {"pregunta": "Mejora este prompt para un modelo de IA: 'hazme un resumen del texto'. Escribe la versión mejorada.",
+   "criterios": "La versión mejorada debe añadir varias de: longitud concreta (p.ej. 3 frases), audiencia, formato de salida, delimitadores para el texto, instrucción de no inventar. Debe ser un prompt completo, no consejos."},
+  {"pregunta": "Diseña en 5 pasos un bucle agéntico generador-crítico para escribir un artículo, indicando la condición de parada.",
+   "criterios": "Debe incluir: generar borrador, crítico con criterios concretos, revisión con la crítica, límite de iteraciones (2-4), y condición de parada verificable (aprobado del crítico o máximo de rondas)."},
+  {"pregunta": "Escribe una función recursiva factorial(n) en Python indicando claramente el caso base, y di qué pasa si se llama con n=-1 tal cual.",
+   "criterios": "Función correcta con caso base (n<=1 o n==0 devuelve 1); debe reconocer que con -1 sin protección hay recursión infinita (RecursionError) y idealmente proponer validar n>=0."},
+  {"pregunta": "Dame exactamente 3 casos límite que probarías en una función dividir(a, b) y qué esperas en cada uno.",
+   "criterios": "Exactamente 3 casos con expectativa: divisor cero (error controlado), negativos (signo correcto), decimales/enteros grandes o a=0. Deben ser casos límite reales con resultado esperado."}
+]
