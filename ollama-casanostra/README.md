@@ -111,6 +111,18 @@ propio modelo resume la conversación (decisiones, datos, tareas pendientes) y
 lo añade a `memoria.md`, que se carga automáticamente la próxima vez. El
 comando `/recordar` sigue disponible para guardar cosas a mano.
 
+## Banco de pruebas: notas objetivas para tus modelos
+
+```bash
+python examen.py casanostra llama3.2      # examina y compara modelos
+```
+
+Pasa un examen de 10 preguntas (matemáticas, lógica, trampas de invención,
+código, seguimiento de instrucciones...) y un modelo juez pone nota 0-10 a
+cada respuesta. La primera vez crea `preguntas.json` — edítalo con preguntas
+de lo que TÚ uses. El historial queda en `resultados.md` para comparar
+modelos y prompts en el tiempo antes de cambiar nada a ciegas.
+
 ## Instalador todo-en-uno
 
 `instalar_todo.sh` es auto-contenido (incluye dentro todos los archivos de
