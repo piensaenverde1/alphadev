@@ -761,6 +761,380 @@ if __name__ == "__main__":
 
 '@
 
+$CONOC_PROG = @'
+# Apuntes maestros de programación
+
+## Principios que separan a un 10 de un 5
+
+- La mejor solución es la más simple que funciona. Cada abstracción, opción o
+  capa extra debe justificar su existencia hoy, no "por si acaso mañana".
+- Los nombres son documentación: `dias_hasta_vencimiento` vale más que `d` y
+  que tres líneas de comentario. Si necesitas comentar QUÉ hace una línea,
+  el nombre está mal elegido.
+- Funciones pequeñas con una sola responsabilidad. Si al describir una función
+  dices "y", probablemente son dos funciones.
+- Valida solo en las fronteras del sistema (entrada del usuario, APIs externas,
+  archivos). Dentro de tu propio código, confía en tus propias garantías.
+- No repitas conocimiento (DRY), pero no fusiones código que solo se parece
+  por casualidad: duplicar dos líneas es mejor que una abstracción equivocada.
+
+## Proceso profesional para cualquier tarea de código
+
+1. CONTRATO: qué entra, qué sale, qué casos límite existen. Escríbelo antes.
+2. DISEÑO: la estructura más simple. Piensa en datos primero, código después.
+3. IMPLEMENTAR: de fuera a dentro, dejando lo difícil aislado en funciones puras.
+4. PROBAR: primero el caso normal, luego los límites (ver sección de pruebas).
+5. REFACTORIZAR: solo cuando funciona. Nunca optimices lo que no has medido.
+
+## Depuración por causa raíz (nunca "prueba a ver")
+
+1. REPRODUCIR: si no puedes reproducir el fallo, no puedes arreglarlo.
+2. LEER el error completo: la última línea dice el qué; la traza dice el dónde.
+3. AISLAR por bisección: corta el problema por la mitad hasta acorralar la línea.
+4. UNA hipótesis cada vez: cambia UNA cosa, observa, repite. Cambiar tres cosas
+   a la vez destruye la información.
+5. VERIFICAR el arreglo: el bug reproducido antes ya no ocurre, y lo demás sigue
+   funcionando. Un arreglo sin verificación es una superstición.
+6. PREGUNTAR por qué existió: ¿qué permitió que este bug llegara aquí? Arregla
+   también eso (test que faltaba, validación de frontera, nombre confuso).
+
+## Casos límite que SIEMPRE hay que probar
+
+- Vacío, un elemento, muchos elementos.
+- Cero, negativo, número enorme, decimal cuando esperas entero.
+- Nulo/None, cadena vacía, espacios, tildes y emojis (unicode).
+- El mismo elemento repetido; entradas ya ordenadas y en orden inverso.
+- División: divisor cero. Índices: primero, último, fuera de rango.
+
+## Seguridad mínima no negociable
+
+- NUNCA construyas SQL concatenando texto del usuario: usa parámetros
+  (`cursor.execute("... WHERE nombre = ?", (nombre,))`). Lo contrario es
+  inyección SQL, el error más explotado de la historia.
+- NUNCA pongas claves, contraseñas o tokens en el código ni en Git: variables
+  de entorno o archivo ignorado por Git.
+- Sanea nombres de archivo que vengan de fuera (`os.path.basename`) para evitar
+  que "../../etc/passwd" escape de tu carpeta.
+- Todo lo que ejecute comandos del sistema con texto del usuario es una bomba:
+  usa listas de argumentos, jamás interpolación en un string de shell.
+
+## Rendimiento con cabeza
+
+- Primero mide (perfilador o cronómetro), después optimiza. La intuición sobre
+  dónde está el cuello de botella falla casi siempre.
+- Complejidades que hay que saber de memoria: buscar en lista = O(n); buscar en
+  diccionario/set = O(1); ordenar = O(n log n); bucle dentro de bucle sobre los
+  mismos datos = O(n²), sospecha siempre de él.
+- El truco más rentable en Python: convertir "buscar en lista dentro de un
+  bucle" en "buscar en un set", pasa de O(n²) a O(n).
+
+## Python idiomático (errores comunes)
+
+- Listas y diccionarios se pasan POR REFERENCIA: `y = x` no copia; `y.append()`
+  también modifica `x`. Copia con `x.copy()` o `list(x)`.
+- Jamás uses una lista como valor por defecto de un parámetro
+  (`def f(datos=[])` se comparte entre llamadas); usa `None` y créala dentro.
+- `s[::-1]` invierte una cadena. `enumerate` antes que `range(len(...))`.
+- Abre archivos con `with open(...) as f:` — se cierran solos incluso con error.
+- Excepciones: captura la más específica posible; un `except:` desnudo esconde
+  hasta los errores de teclado.
+
+## Git esencial
+
+- Commits pequeños con mensajes que explican el PORQUÉ.
+- Rama nueva para cada cosa; main siempre funciona.
+- Antes de tocar nada delicado: `git status` y `git diff` para saber dónde estás.
+
+'@
+$CONOC_PROMPTS = @'
+# Apuntes maestros de ingeniería de prompts
+
+## Anatomía de un prompt profesional (las 6 piezas)
+
+1. IDENTIDAD: quién es el modelo y su única misión, en una frase.
+   ("Eres un revisor de contratos de alquiler español.")
+2. CONTEXTO: los datos que necesita y que no puede adivinar.
+   (el texto, el público objetivo, las restricciones)
+3. TAREA: el verbo exacto. "Analiza", "resume en 3 puntos", "traduce" —
+   nunca "ayúdame con".
+4. PROCESO: pasos numerados si la tarea tiene orden ("primero identifica X,
+   después compara con Y").
+5. FORMATO DE SALIDA: estructura exacta de la respuesta (tabla, JSON, lista
+   de N elementos, una sola palabra...). Lo que no pidas, no llegará.
+6. CRITERIOS Y LÍMITES: qué hace buena la respuesta y qué está prohibido
+   ("si no aparece en el texto, di 'no consta'; no inventes").
+
+## Técnicas que funcionan (y cuándo usarlas)
+
+- EJEMPLOS (few-shot): la técnica más potente. 2-3 pares entrada→salida
+  enseñan el formato mejor que cualquier explicación. Úsala siempre que el
+  formato importe.
+- PENSAR PASO A PASO: para problemas de lógica o cálculo, pide "razona paso a
+  paso antes de dar la respuesta final". Mejora la precisión a cambio de
+  respuestas más largas.
+- DELIMITADORES: separa los datos de las instrucciones con ``` o ###.
+  Evita que el modelo confunda el texto a procesar con órdenes.
+- ROL: "eres un auditor escéptico" cambia el comportamiento de verdad; úsalo
+  para ajustar tono y nivel de exigencia.
+- SALIDA ESTRUCTURADA: si vas a procesar la respuesta con código, exige un
+  formato parseable ("responde SOLO con este formato: NOTA: <numero>") y
+  parsea con tolerancia (busca el patrón, no la igualdad exacta).
+- RESTRICCIÓN DE HONESTIDAD: añade siempre "si no lo sabes, dilo" en tareas
+  con datos. Reduce las invenciones más que ninguna otra instrucción.
+
+## Cómo iterar un prompt (el bucle del ingeniero)
+
+1. Escribe la versión 1 con las 6 piezas.
+2. Pruébala con un BANCO DE CASOS fijo (5-10 entradas con salida esperada).
+3. Cambia UNA sola cosa por iteración. Si cambias tres, no sabrás cuál actuó.
+4. Puntúa cada versión contra el banco. Conserva la mejor, no la última.
+5. Cuando el prompt falla en un caso nuevo, añade ese caso al banco antes
+   de tocar el prompt.
+
+## Temperatura: el dial de creatividad
+
+- 0.2–0.4: extracción de datos, corrección, clasificación, código. Precisión.
+- 0.5–0.7: conversación general, explicaciones, resúmenes. Equilibrio.
+- 0.8–1.0: lluvia de ideas, nombres, ficción. Variedad (y más errores).
+
+## Anti-patrones (lo que estropea prompts)
+
+- Relleno motivacional: "eres muy inteligente y lo harás genial" no aporta nada.
+- Instrucciones contradictorias: "sé exhaustivo" + "sé breve" — elige.
+- Prompt kilométrico sin estructura: si tú no puedes escanearlo, el modelo
+  tampoco. Usa secciones y listas.
+- Reglas no verificables: "sé útil" no se puede comprobar; "responde en menos
+  de 100 palabras" sí. Toda regla debería ser comprobable por un tercero.
+- Pedir N cosas en una pregunta: divide en N prompts o el modelo hará 2 bien
+  y 3 regular.
+- Negaciones ambiguas: "no seas demasiado técnico" — ¿cuánto es demasiado?
+  Mejor: "explícalo para alguien sin estudios de informática".
+
+## Plantilla reutilizable
+
+```
+Eres [IDENTIDAD], tu única misión es [MISIÓN].
+
+Contexto: [DATOS QUE NECESITA]
+
+Tarea: [VERBO + OBJETO CONCRETO]
+Proceso:
+1. [PASO]
+2. [PASO]
+
+Formato de salida: [ESTRUCTURA EXACTA]
+
+Reglas:
+- [REGLA VERIFICABLE]
+- Si la información no está en el contexto, di "no consta"; no inventes.
+
+Ejemplo:
+Entrada: [EJEMPLO DE ENTRADA]
+Salida: [EJEMPLO DE SALIDA PERFECTA]
+```
+
+'@
+$CONOC_BUCLES = @'
+# Apuntes maestros de bucles agénticos (agentes que trabajan solos)
+
+## La idea central
+
+Un agente no es un modelo más listo: es un modelo normal dentro de un BUCLE
+bien diseñado. La inteligencia extra sale de la estructura: generar → criticar
+→ revisar supera casi siempre a una única respuesta directa, incluso con el
+mismo modelo.
+
+## Los 4 patrones fundamentales
+
+1. GENERADOR-CRÍTICO (el más rentable)
+   - El generador produce; un crítico con instrucciones DISTINTAS revisa contra
+     criterios concretos; el generador corrige con esa crítica. 2-3 rondas.
+   - Clave: el crítico debe tener criterios verificables ("¿cumple X? ¿hay
+     datos inventados?"), no "¿está bien?".
+
+2. PLAN-EJECUTA-VERIFICA
+   - Primero un plan corto (3-7 pasos). Luego ejecutar paso a paso. Al final,
+     verificar el resultado contra el objetivo ANTES de darlo por terminado.
+   - Clave: el plan se escribe una vez y se muestra; ejecutar sin plan produce
+     deriva, y planificar sin ejecutar produce parálisis.
+
+3. DESCOMPOSICIÓN EN ESPECIALISTAS
+   - Dividir una tarea grande en misiones pequeñas, cada una con su propio
+     prompt especializado (un "equipo"). Un coordinador reparte y reúne.
+   - Clave: especialistas COMPLEMENTARIOS, no redundantes; máximo 3-4. Más
+     especialistas = más ruido, no más inteligencia.
+
+4. BUCLE CON MEMORIA
+   - Entre pasos, el estado se guarda FUERA del modelo (archivo, lista de
+     hechos): qué se decidió, qué falta, qué falló. Cada paso lee ese estado.
+   - Clave: el contexto del modelo se llena y olvida; el archivo no.
+
+## Reglas de oro para que un bucle no degenere
+
+- LÍMITE DE ITERACIONES SIEMPRE (2-4). Los bucles "hasta que quede perfecto"
+  degeneran: el modelo empieza a deshacer sus propios aciertos.
+- CONDICIÓN DE PARADA VERIFICABLE: "el crítico responde APROBADO" o "pasan los
+  tests" — nunca "cuando esté bien".
+- FORMATOS PARSEABLES entre pasos: si el coordinador tiene que "entender" la
+  salida libre de otro agente, el bucle es frágil. Exige formatos fijos
+  ("VEREDICTO: APROBADO|MEJORAR") y parsea con tolerancia.
+- LIMPIA LA SALIDA: algunos modelos emiten razonamiento interno
+  (<think>...</think>); elimínalo antes de parsear o contaminará el bucle.
+- CADA ROL, SU PROMPT: el crítico no puede ser el mismo prompt que el
+  generador o se dará la razón a sí mismo. Cambiar el rol cambia el juicio.
+- MIDE EL PROGRESO: guarda la puntuación de cada iteración. Si la iteración 3
+  no mejora a la 2, para: ya llegaste al techo del modelo.
+- SOLO TEXTO SIN SUPERVISIÓN: un agente autónomo genera planes, prompts y
+  código COMO TEXTO. Ejecutar código o comandos generados sin revisión humana
+  es la línea que separa "útil" de "peligroso".
+
+## Cómo diseñar tu propio bucle (receta)
+
+1. Define el objetivo y cómo se verifica que está cumplido (¡antes de nada!).
+2. Decide los roles mínimos: ¿basta generador-crítico? ¿hace falta plan previo?
+3. Escribe el prompt de cada rol con formato de salida fijo.
+4. Fija el límite de iteraciones y la condición de parada.
+5. Decide qué se guarda entre pasos y dónde (archivo de estado).
+6. Prueba con UN caso pequeño de principio a fin antes de ampliarlo.
+7. Añade al banco de pruebas cada fallo que encuentres.
+
+## Errores típicos de principiante
+
+- Bucle infinito sin límite → siempre acaba en basura o en bloqueo.
+- Un solo mega-prompt que "lo hace todo" → divide en roles.
+- El crítico sin criterios → aprueba todo o suspende todo, al azar.
+- Confiar en que el modelo "recuerde" pasos anteriores → guárdalo en archivo.
+- Medir el éxito por sensaciones → banco de pruebas con notas, siempre.
+
+'@
+$CONOC_RESOL = @'
+# Apuntes maestros de resolución de problemas y auto-mejora
+
+## El método universal (vale para código, dinero, averías y vida)
+
+1. DEFINIR: escribe el problema en una frase y define "resuelto" con un
+   criterio verificable. Un problema sin criterio de éxito no se puede
+   resolver, solo se puede sufrir.
+2. OBSERVAR: ¿cuándo ocurre, cuándo no, qué cambió justo antes de empezar?
+   El 80% de los problemas nuevos vienen de un cambio reciente.
+3. CAUSA RAÍZ: distingue síntoma (lo que se ve) de causa (lo que lo produce).
+   Técnica de los 5 porqués: pregunta "¿por qué?" en cadena hasta llegar a
+   algo atacable. "Llego tarde → me duermo → me acuesto tarde → miro el móvil
+   en la cama → el móvil duerme en la mesilla". La causa atacable es la última.
+4. GENERAR 3 OPCIONES: la rápida, la sólida y la barata. Una sola opción no es
+   una decisión, es una ocurrencia. Más de cuatro es procrastinar.
+5. DECIDIR con criterio: ¿cuál cumple el criterio de éxito con menos riesgo?
+   Regla clave: si la decisión es REVERSIBLE, decide rápido y prueba; si es
+   IRREVERSIBLE, para y analiza el peor caso de cada opción.
+6. EJECUTAR el paso más pequeño primero: algo que se pueda hacer en 5 minutos.
+   El progreso inmediato desbloquea el resto y da información real.
+7. VERIFICAR contra el criterio del paso 1. Sin verificación no hay solución,
+   hay esperanza.
+8. PLAN B definido de antemano: cuál es la segunda mejor opción y qué señal
+   exacta la activa ("si el viernes sigue pasando X, entonces B").
+
+## Técnicas de diagnóstico (encontrar la causa)
+
+- AISLAR VARIABLES: cambia UNA cosa cada vez y observa. Cambiar tres a la vez
+  destruye la información.
+- BISECCIÓN: corta el problema por la mitad. ¿El fallo está en la primera
+  mitad o en la segunda? Repite. Encuentra 1 línea entre 1000 en 10 pasos.
+- SUSTITUCIÓN: prueba con un elemento que sabes que funciona (otra bombilla,
+  otro cable, otro archivo, otro usuario). Si desaparece el fallo, ya sabes
+  dónde estaba.
+- DEL MÁS BARATO AL MÁS CARO: comprueba primero lo que cuesta 10 segundos
+  (¿está enchufado? ¿hay guardado un cambio?) antes de lo que cuesta una tarde.
+- PROBLEMAS INTERMITENTES: no se cazan al vuelo, se cazan con registro. Anota
+  fecha, hora y condiciones cada vez que ocurre; el patrón aparece en la lista.
+- ¿QUÉ CAMBIÓ?: ante algo que funcionaba y dejó de funcionar, la primera
+  pregunta siempre es qué se instaló, actualizó, movió o tocó justo antes.
+
+## Trampas mentales que arruinan soluciones
+
+- Enamorarse de la primera hipótesis y buscar solo pruebas a favor. Antídoto:
+  intenta DEMOSTRAR QUE TU HIPÓTESIS ES FALSA; si sobrevive, es buena.
+- Arreglar el síntoma: desaparece hoy, vuelve el mes que viene más caro.
+- "Ya lo intenté y no funcionó": ¿lo intentaste igual o parecido? Los detalles
+  de ejecución importan más que la idea.
+- Parálisis por análisis: si la decisión es reversible y barata, probar ES la
+  forma más rápida de analizar.
+- Resolver el problema equivocado: cada cierto tiempo relee tu definición del
+  paso 1 y pregúntate si sigues atacando eso.
+
+## El bucle de auto-mejora (kaizen personal)
+
+1. MIDE algo concreto de tu semana (horas, euros, errores, ejercicios hechos).
+   Sin número no hay mejora, hay sensaciones.
+2. RETROSPECTIVA de 3 preguntas: ¿qué funcionó? ¿qué no? ¿qué UNA cosa cambio
+   la semana que viene? Una sola: cambiar cinco cosas es no cambiar ninguna.
+3. APLICA el cambio y vuelve a medir. Compara contra la semana anterior, no
+   contra el ideal.
+4. REGISTRA lo aprendido en una nota corta (qué probé → qué pasó → qué haré).
+   Las lecciones no escritas se pagan dos veces.
+- Regla del sistema, no del objetivo: "correr 3 veces por semana" (sistema)
+  vence a "correr un maratón" (objetivo) porque se puede cumplir cada semana.
+- Mejora del 1%: mejorar un poco algo que haces cada día vale más que mejorar
+  mucho algo que haces una vez al año.
+
+## Cómo pedir ayuda bien (a personas o a una IA)
+
+Un buen informe de problema multiplica la calidad de la ayuda:
+1. Qué intentabas conseguir.
+2. Qué hiciste exactamente (pasos reproducibles).
+3. Qué esperabas que pasara y qué pasó en su lugar (mensaje de error completo).
+4. Qué has probado ya y qué resultado dio.
+
+'@
+$BANCO_PROG = @'
+[
+  {"pregunta": "Escribe una función en Python que devuelva los N primeros números primos. Debe manejar N=0.",
+   "criterios": "Función correcta y ejecutable que devuelve lista de primos (2,3,5,7,...); con N=0 devuelve lista vacía sin error."},
+  {"pregunta": "¿Qué imprime este código y por qué?\nx = [1, 2, 3]\ny = x\ny.append(4)\nprint(x)",
+   "criterios": "Debe decir que imprime [1, 2, 3, 4] porque y = x no copia la lista: ambas variables referencian el mismo objeto."},
+  {"pregunta": "Encuentra el bug:\ndef media(numeros):\n    total = 0\n    for n in numeros:\n        total += n\n    return total / len(numeros)",
+   "criterios": "Debe detectar que con lista vacía falla por división entre cero (len=0), y proponer manejarlo (devolver 0, None o lanzar error claro)."},
+  {"pregunta": "¿Qué está mal en esta línea y cómo se arregla?\nquery = \"SELECT * FROM usuarios WHERE nombre = '\" + nombre_usuario + \"'\"",
+   "criterios": "Debe identificar inyección SQL y proponer consultas parametrizadas (placeholders ? o %s con parámetros separados). Concatenar entrada del usuario en SQL es la vulnerabilidad."},
+  {"pregunta": "¿Cuál es la complejidad de buscar un elemento en una lista de Python frente a buscarlo en un set, y qué implicación práctica tiene dentro de un bucle?",
+   "criterios": "Lista O(n), set/diccionario O(1). Dentro de un bucle, buscar en lista da O(n²) y conviene convertir a set para obtener O(n)."},
+  {"pregunta": "¿Por qué es peligroso def acumular(elemento, lista=[])? Explica y da la versión correcta.",
+   "criterios": "El valor por defecto mutable se crea UNA vez y se comparte entre llamadas. Correcto: lista=None y dentro 'if lista is None: lista = []'."},
+  {"pregunta": "Mejora este prompt para un modelo de IA: 'hazme un resumen del texto'. Escribe la versión mejorada.",
+   "criterios": "La versión mejorada debe añadir varias de: longitud concreta (p.ej. 3 frases), audiencia, formato de salida, delimitadores para el texto, instrucción de no inventar. Debe ser un prompt completo, no consejos."},
+  {"pregunta": "Diseña en 5 pasos un bucle agéntico generador-crítico para escribir un artículo, indicando la condición de parada.",
+   "criterios": "Debe incluir: generar borrador, crítico con criterios concretos, revisión con la crítica, límite de iteraciones (2-4), y condición de parada verificable (aprobado del crítico o máximo de rondas)."},
+  {"pregunta": "Escribe una función recursiva factorial(n) en Python indicando claramente el caso base, y di qué pasa si se llama con n=-1 tal cual.",
+   "criterios": "Función correcta con caso base (n<=1 o n==0 devuelve 1); debe reconocer que con -1 sin protección hay recursión infinita (RecursionError) y idealmente proponer validar n>=0."},
+  {"pregunta": "Dame exactamente 3 casos límite que probarías en una función dividir(a, b) y qué esperas en cada uno.",
+   "criterios": "Exactamente 3 casos con expectativa: divisor cero (error controlado), negativos (signo correcto), decimales/enteros grandes o a=0. Deben ser casos límite reales con resultado esperado."}
+]
+
+'@
+$BANCO_SOL = @'
+[
+  {"pregunta": "Tu ordenador va lento desde ayer. Describe paso a paso tu proceso para encontrar la causa antes de tocar nada.",
+   "criterios": "Debe empezar por '¿qué cambió ayer?' (instalaciones, actualizaciones), observar/medir (administrador de tareas, qué proceso consume), aislar variables una a una, y NO proponer reinstalar o formatear a ciegas como primer paso."},
+  {"pregunta": "Aplica la técnica de los 5 porqués a este problema: 'Siempre llego tarde al trabajo'. Inventa una cadena plausible completa.",
+   "criterios": "Cadena encadenada de al menos 3-5 porqués que termina en una causa raíz ATACABLE (un hábito o decisión concreta), no en una excusa genérica."},
+  {"pregunta": "Explica la diferencia entre síntoma y causa raíz con un ejemplo cotidiano concreto.",
+   "criterios": "Definición correcta de ambos y un ejemplo donde se vea que atacar el síntoma no evita que el problema vuelva (p.ej. tomar analgésico vs corregir postura)."},
+  {"pregunta": "Tienes dos soluciones para un problema: una rápida pero frágil y una lenta pero sólida. ¿Con qué criterios decides cuál aplicar?",
+   "criterios": "Debe mencionar reversibilidad de la decisión, urgencia/coste de esperar, y coste del error si falla. Idealmente: rápida si es reversible y urgente; sólida si el error es caro o la decisión irreversible."},
+  {"pregunta": "Una lámpara no enciende. Ordena los pasos de diagnóstico del más barato al más caro.",
+   "criterios": "Orden lógico de aislamiento: interruptor/enchufada, probar la bombilla en otra lámpara (sustitución), probar otro aparato en ese enchufe, revisar el cuadro eléctrico, y solo al final electricista. Debe cambiar una variable cada vez."},
+  {"pregunta": "Divide el problema 'quiero ahorrar más dinero' en 3 sub-problemas concretos y atacables, y di cuál atacarías primero y por qué.",
+   "criterios": "3 sub-problemas medibles (saber en qué se va el dinero, reducir un gasto concreto, automatizar ahorro...) y una elección justificada, típicamente empezar por medir/registrar gastos porque desbloquea los demás."},
+  {"pregunta": "¿Qué es un plan B bien definido? Da un ejemplo que incluya la señal exacta que lo activa.",
+   "criterios": "Plan B = segunda mejor opción decidida ANTES de ejecutar el plan A, con una señal concreta y verificable de activación (fecha límite o umbral medible), no 'si va mal ya veremos'."},
+  {"pregunta": "Diseña un bucle de auto-mejora semanal en 4 pasos para cualquier hábito.",
+   "criterios": "Debe incluir: medir algo concreto, retrospectiva (qué funcionó/qué no), elegir UN solo cambio para la semana siguiente, y volver a medir/registrar lo aprendido."},
+  {"pregunta": "Un fallo ocurre solo de vez en cuando y nunca cuando lo estás mirando. ¿Cuál es tu estrategia para cazarlo?",
+   "criterios": "Registrar cada aparición (fecha, hora, condiciones, qué se estaba haciendo) para encontrar el patrón; intentar aumentar la frecuencia reproduciendo las condiciones; no concluir nada de un solo caso."},
+  {"pregunta": "Tu script de 100 líneas falla sin mensaje de error claro. Explica cómo usar la bisección para encontrar la línea culpable y cuántos pasos te costaría aproximadamente.",
+   "criterios": "Dividir por mitades (comentar/aislar mitad del código o poner una traza en medio), decidir en qué mitad está el fallo, repetir. Aproximadamente log2(100) ≈ 7 pasos."}
+]
+
+'@
 # Escribir en UTF-8 SIN BOM (Ollama y Python lo requieren limpio)
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText("$DIR\Modelfile", $MODELFILE.Replace("__BASE__", $BASE), $utf8)
@@ -772,6 +1146,13 @@ $utf8 = New-Object System.Text.UTF8Encoding($false)
 [IO.File]::WriteAllText("$DIR\cerebro.py", $CEREBRO, $utf8)
 [IO.File]::WriteAllText("$DIR\biblioteca.py", $BIBLIOTECA, $utf8)
 [IO.File]::WriteAllText("$DIR\examen.py", $EXAMEN, $utf8)
+New-Item -ItemType Directory -Force -Path "$DIR\conocimiento" | Out-Null
+[IO.File]::WriteAllText("$DIR\conocimiento\programacion.md", $CONOC_PROG, $utf8)
+[IO.File]::WriteAllText("$DIR\conocimiento\ingenieria_de_prompts.md", $CONOC_PROMPTS, $utf8)
+[IO.File]::WriteAllText("$DIR\conocimiento\bucles_agenticos.md", $CONOC_BUCLES, $utf8)
+[IO.File]::WriteAllText("$DIR\conocimiento\resolucion_de_problemas.md", $CONOC_RESOL, $utf8)
+[IO.File]::WriteAllText("$DIR\preguntas_programacion.json", $BANCO_PROG, $utf8)
+[IO.File]::WriteAllText("$DIR\preguntas_soluciones.json", $BANCO_SOL, $utf8)
 
 # --------------------------------------------- 5. Descargar modelos y crear todo
 Write-Host "[5/6] Descargando $BASE y creando los asistentes (puede tardar varios minutos)..."
@@ -782,6 +1163,9 @@ ollama create maestro    -f "$DIR\habilidades\maestro.Modelfile"
 ollama create forjador   -f "$DIR\habilidades\forjador.Modelfile"
 ollama create alquimista -f "$DIR\habilidades\alquimista.Modelfile"
 ollama create resolutor  -f "$DIR\habilidades\resolutor.Modelfile"
+if (Get-Command python -ErrorAction SilentlyContinue) {
+  try { python "$DIR\biblioteca.py" indexar "$DIR\conocimiento" } catch { Write-Host "  AVISO: indexa luego con: python $DIR\biblioteca.py indexar $DIR\conocimiento" }
+}
 
 # ------------------------------------------------------------------ 6. Resumen
 Write-Host ""
