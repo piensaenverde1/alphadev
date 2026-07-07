@@ -1,0 +1,22 @@
+[
+  {"pregunta": "¿De qué 4 fuentes de CAMBIO nacen las oportunidades reales de negocio e inversión? Da un ejemplo de cada una.",
+   "criterios": "Tecnología (algo caro se abarata), regulación (obligaciones o mercados nuevos), demografía/hábitos (necesidades crecientes con oferta vieja) y crisis/desajustes (huecos temporales). Con ejemplos plausibles."},
+  {"pregunta": "Noticia: 'Suben los tipos de interés y las hipotecas se encarecen'. Aplica el análisis de segundo orden: ¿dónde podría haber oportunidades que NO están en el titular?",
+   "criterios": "Razonamiento de segundo orden: ayuda a renegociar deudas/comparar hipotecas, sustitutos baratos de gastos que las familias recortan, alquiler vs compra, asesoría de refinanciación. Lo importante es que vaya más allá del titular con lógica causal."},
+  {"pregunta": "¿Por qué 'si todo el mundo ya habla de una oportunidad, probablemente llegas tarde'? ¿Qué sesgo psicológico te empuja a entrar igualmente?",
+   "criterios": "El consenso ya está recogido en precios/competencia; la ventana era antes. El sesgo: FOMO (miedo a quedarse fuera), que lleva a comprar caro y tarde."},
+  {"pregunta": "Un modelo de IA local, ¿puede saber qué pasó ayer en la economía? ¿Cuál es el flujo de trabajo correcto para analizar actualidad con él?",
+   "criterios": "No: tiene fecha de corte y no tiene internet; si responde sobre 'ayer' está inventando. Flujo correcto: el usuario aporta la noticia/dato fresco (pegado o indexado) y el modelo aplica el método de análisis."},
+  {"pregunta": "Enumera al menos 6 de las 10 preguntas del protocolo de validación de una oportunidad, y di qué veredicto corresponde a una puntuación de 6/10.",
+   "criterios": "Debe recordar la mayoría: problema en una frase, gente pagando ya, 5+ conversaciones con hechos, prueba <2 semanas/<100€, margen vs coste de cliente, ventaja propia, por qué no lo hace uno grande, estructural vs moda, pérdida asumible, frío a 48h. 6/10 = FALTAN DATOS: validar lo que falla antes de avanzar."},
+  {"pregunta": "Valida este caso con el protocolo: 'Vi un vídeo de un gurú: comprar cursos de trading con IA y revenderlos; garantiza 3.000€/mes desde el primer mes, pero la oferta acaba mañana.' ¿Puntuación aproximada y veredicto?",
+   "criterios": "Debe detectar las alarmas (garantía de ingresos + urgencia artificial + gurú = humo/estafa), suspender el protocolo (0-3/10) y VEREDICTO: DESCARTAR. Ideal si menciona que quien gana es el que vende el curso."},
+  {"pregunta": "Valida este caso: 'Soy rápido con hojas de cálculo; en mi barrio hay muchos comercios que llevan cuentas en papel; les ofrecería ponérselas al día por una cuota; probaría gratis con 2 este mes.' ¿Qué puntos del protocolo cumple y cuál sería el primer paso de coste 0?",
+   "criterios": "Cumple varios: habilidad propia (ventaja), prueba <2 semanas/<100€, problema concreto, mercado accesible; faltaría confirmar que pagarían (conversaciones). Primer paso: hablar con 5 comercios esta semana y proponer el piloto. Veredicto razonable: ADELANTE o FALTAN DATOS con plan."},
+  {"pregunta": "¿Por qué hay que separar el dinero del negocio del personal desde el primer euro, y cuáles son los 3 números semanales mínimos de autogestión?",
+   "criterios": "Mezclar arruina contabilidad, decisiones y fiscalidad. Los 3 números: ingresos, horas invertidas y coste de conseguir cada cliente."},
+  {"pregunta": "¿Qué diferencia una fuente primaria de una secundaria al analizar una noticia económica, y cuántas fuentes necesitas antes de actuar?",
+   "criterios": "Primaria: dato original (organismo oficial, resultados de la empresa, boletín oficial); secundaria: interpretación de terceros (medios, opinadores). Mínimo dos fuentes independientes, priorizando primarias."},
+  {"pregunta": "Evaluaste una oportunidad, la descartaste, y un conocido que entró dice estar ganando dinero. ¿Fue un error tu descarte? Razona como analista.",
+   "criterios": "No necesariamente: una buena decisión se juzga por el proceso con la información disponible, no por un resultado individual (supervivencia sesgada, riesgo asumido, plazo corto). Descartar rápido es parte del método; revisar el registro de decisiones para aprender, sí."}
+]
