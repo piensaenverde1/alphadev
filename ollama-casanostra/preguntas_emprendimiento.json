@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Por qué mueren la mayoría de los negocios nuevos y qué se valida antes de construir nada?",
+   "criterios": "Mueren por construir algo que nadie quería. Se valida que el problema existe, duele y hay gente dispuesta a PAGAR."},
+  {"pregunta": "¿Por qué preguntar '¿te gustaría una app que...?' produce respuestas inútiles y qué se pregunta en su lugar?",
+   "criterios": "Genera mentiras educadas. En su lugar: preguntas sobre su vida y comportamiento pasado ('¿cuándo te pasó por última vez?', '¿qué hiciste?', '¿cuánto te costó?')."},
+  {"pregunta": "¿Qué es un MVP de verdad? Da 2 ejemplos que no requieran programar.",
+   "criterios": "El experimento más barato que demuestra que pagarán. Ejemplos: landing con precio y botón, prestar el servicio a mano, preventa, hoja de cálculo."},
+  {"pregunta": "¿Cuál es la única validación que no miente y por qué?",
+   "criterios": "El pago (o compromiso real de pago/preventa). Las opiniones son gratis; pagar cuesta, y solo eso demuestra demanda."},
+  {"pregunta": "Margen: vendes a 30€ algo que te cuesta 12€ producir, y conseguir cada cliente te cuesta 25€ en publicidad. ¿Hay negocio? Calcula.",
+   "criterios": "Margen unitario 18€ < coste de adquisición 25€: pierdes 7€ por cliente. No hay negocio así; hay que subir precio, bajar CAC o cambiar canal."},
+  {"pregunta": "¿Por qué esconder tu idea (pedir NDA a todos) es un error de principiante?",
+   "criterios": "Las ideas valen poco, la ejecución lo es todo; contarla da feedback y aprendizaje que vale más que el riesgo de copia."},
+  {"pregunta": "'Si tu primera versión no te da un poco de vergüenza, saliste tarde.' Explica qué significa.",
+   "criterios": "El perfeccionismo retrasa el aprendizaje real del mercado; lanzar pronto e iterar con feedback supera a pulir a ciegas."},
+  {"pregunta": "Nombra 3 formas de conseguir el primer cliente sin presupuesto.",
+   "criterios": "Red directa y referidos, ir donde ya está el cliente (grupos, foros, ferias), mostrar trabajo (casos, antes/después), y pedir la venta directamente."}
+]

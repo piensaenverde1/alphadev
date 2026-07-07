@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Qué es la pirámide invertida y por qué funciona en textos profesionales?",
+   "criterios": "Lo más importante primero (conclusión/petición), detalle después. Porque el lector decide en segundos si sigue y puede parar en cualquier punto sin perder lo esencial."},
+  {"pregunta": "Mejora este asunto de email: 'Consulta'. El objetivo es que el jefe apruebe el presupuesto de marketing antes del viernes.",
+   "criterios": "Un asunto concreto con acción y plazo, p.ej. 'Presupuesto marketing: ¿apruebas antes del viernes?'. Debe incluir tema + acción esperada."},
+  {"pregunta": "¿Por qué un email debe tener UNA sola petición y qué pasa si tiene tres?",
+   "criterios": "Con varias peticiones el receptor responde a una y olvida las demás (o pospone todo). Tres peticiones = tres emails o una lista numerada con respuestas separadas explícitas."},
+  {"pregunta": "Reescribe con voz activa y más claro: 'El informe fue elaborado por el equipo y será presentado próximamente a la dirección.'",
+   "criterios": "Algo como 'El equipo elaboró el informe y lo presentará a la dirección el [fecha]'. Voz activa y concreción."},
+  {"pregunta": "¿Qué debe contener un buen resumen ejecutivo y qué debe poder hacer quien SOLO lea eso?",
+   "criterios": "Qué se analizó, qué se encontró y qué se recomienda, en 3-5 líneas. El lector debe poder decidir sin leer el resto."},
+  {"pregunta": "En un CV, ¿qué es mejor: describir funciones o logros? Da un ejemplo de cada uno para un puesto de ventas.",
+   "criterios": "Logros con números. Función: 'responsable de ventas de la zona'. Logro: 'aumenté las ventas de la zona un 15% en 6 meses'."},
+  {"pregunta": "Nombra 3 pasos de revisión que mejoran cualquier texto antes de enviarlo.",
+   "criterios": "Varias de: dejar reposar, leer en voz alta, cortar ~20%, comprobar que la primera frase dice lo esencial, verificar que la petición es inconfundible."},
+  {"pregunta": "¿Por qué 'reduce el coste un 23%' es mejor que 'supone un gran ahorro'?",
+   "criterios": "Los números concretos son verificables, creíbles y comparables; los adjetivos son opinión vacía que cada lector interpreta distinto."}
+]

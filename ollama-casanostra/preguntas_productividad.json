@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Por qué hay que capturar todas las tareas fuera de la cabeza y en un único sitio?",
+   "criterios": "La mente es mala almacenando y recuerda pendientes en momentos inútiles generando estrés; un único sitio confiable libera atención y evita olvidos."},
+  {"pregunta": "¿Qué son las MIT y cuántas debes elegir al día?",
+   "criterios": "Tareas Más Importantes: las 1-3 que hacen que el día valga aunque no hagas nada más. Máximo 3."},
+  {"pregunta": "Explica la regla de los 2 minutos y por qué funciona.",
+   "criterios": "Si algo lleva menos de 2 minutos, hazlo inmediatamente: gestionarlo/aplazarlo cuesta más que hacerlo."},
+  {"pregunta": "Llevas 3 días posponiendo 'hacer la declaración de la renta'. ¿Qué técnica aplicas para arrancar hoy?",
+   "criterios": "Dividir hasta el primer paso trivial ('abrir la web y buscar el borrador') y/o comprometerse a solo 5 minutos. Reconocer que el bloqueo es emocional también suma."},
+  {"pregunta": "Diferencia entre urgente e importante, con un ejemplo de tarea importante NO urgente y qué hacer con ella.",
+   "criterios": "Urgente exige atención ya; importante acerca a tus objetivos. Ejemplo válido: ejercicio, aprender, planificar. Se AGENDA con bloque de tiempo, o nunca ocurre."},
+  {"pregunta": "¿Por qué el entorno vence a la fuerza de voluntad? Da 2 ejemplos prácticos.",
+   "criterios": "La voluntad se agota; el entorno decide por defecto. Ejemplos: móvil en otra habitación, dejar preparada la ropa de deporte, desinstalar apps, bloquear webs."},
+  {"pregunta": "Describe cómo crear un hábito nuevo usando el apilamiento de hábitos, con un ejemplo.",
+   "criterios": "Engancharlo a un hábito existente como señal: 'después de [hábito actual], haré [hábito nuevo pequeño]'. Ejemplo concreto con inicio ridículamente pequeño."},
+  {"pregunta": "¿Qué se hace en una revisión semanal y por qué es la pieza que sostiene todo el sistema?",
+   "criterios": "Vaciar capturas, actualizar listas, elegir prioridades de la semana, revisar calendario. Sin ella las listas se pudren y el sistema pierde confianza y se abandona."}
+]

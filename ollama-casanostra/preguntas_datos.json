@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Cuál es la primera pregunta antes de empezar cualquier análisis de datos y por qué?",
+   "criterios": "'¿Qué decisión se quiere tomar con esto?' Sin pregunta de negocio el análisis no tiene criterio de éxito ni utilidad."},
+  {"pregunta": "Nombra 4 problemas típicos de limpieza en una tabla real y cómo se resuelven.",
+   "criterios": "Duplicados (eliminar), nulos (decidir: borrar/rellenar/marcar), formatos inconsistentes (fechas, espacios, mayúsculas: normalizar), categorías escritas distinto ('Madrid'/'madrid': unificar)."},
+  {"pregunta": "¿Para qué sirve una tabla dinámica y por qué es la herramienta más rentable de Excel?",
+   "criterios": "Resumir y cruzar datos por grupos (sumas, medias, conteos) en segundos sin fórmulas; responde la mayoría de preguntas de negocio básicas."},
+  {"pregunta": "¿Qué hace BUSCARV/XLOOKUP y cuándo lo necesitas?",
+   "criterios": "Traer valores de otra tabla usando un campo común (cruzar tablas), p.ej. añadir el nombre del cliente a la tabla de ventas por su ID."},
+  {"pregunta": "'Los helados y los ahogamientos suben a la vez, luego el helado causa ahogamientos.' ¿Qué error es y cuál es la explicación real?",
+   "criterios": "Confundir correlación con causalidad; hay una tercera variable (verano/calor) que causa ambas."},
+  {"pregunta": "¿Cuándo debe usarse la mediana en vez de la media? Da un ejemplo.",
+   "criterios": "Cuando hay valores extremos que distorsionan (sueldos, precios de vivienda): la media sube por unos pocos casos enormes y la mediana representa mejor al típico."},
+  {"pregunta": "¿Qué gráfico usarías para: evolución mensual de ventas, comparación entre 5 tiendas, y relación precio-demanda?",
+   "criterios": "Líneas para evolución temporal; barras para comparar categorías; dispersión para relación entre dos variables."},
+  {"pregunta": "Tu análisis da un resultado sorprendente que confirma justo lo que esperabas encontrar. ¿Qué haces antes de presentarlo?",
+   "criterios": "Sospechar y verificar: revisar limpieza y fórmulas, comprobar N y rango de fechas, buscar explicaciones alternativas y sesgos (incluido el propio). Lo sorprendente suele ser un error."}
+]

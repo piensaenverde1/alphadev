@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Por qué usar la misma contraseña en muchos sitios es tan peligroso y cuál es la solución práctica?",
+   "criterios": "Al filtrarse una web, prueban ese email+contraseña en todas (credential stuffing). Solución: gestor de contraseñas con contraseña única por servicio."},
+  {"pregunta": "¿Por qué el correo electrónico es la cuenta más crítica de proteger?",
+   "criterios": "Porque con el correo se resetean las contraseñas de todo lo demás: quien lo controla, controla todas tus cuentas."},
+  {"pregunta": "Te llega un SMS: 'Correos: su paquete está retenido, pague 1,99€ aquí [enlace]'. ¿Qué haces y qué señales ves?",
+   "criterios": "No pulsar: estafa (smishing). Señales: urgencia, pago pequeño por enlace, remitente no verificable. Verificar solo por app/web oficial escrita a mano."},
+  {"pregunta": "¿Qué es el 2FA, por qué la app es mejor que el SMS, y dónde activarlo primero?",
+   "criterios": "Segundo factor además de la contraseña. La app evita el SIM swapping del SMS. Primero: correo y banco."},
+  {"pregunta": "Explica la regla 3-2-1 de copias de seguridad y el paso que casi todo el mundo olvida.",
+   "criterios": "3 copias, 2 soportes distintos, 1 fuera de casa. Olvidado: probar la restauración periódicamente."},
+  {"pregunta": "Te llama 'soporte de Microsoft': tu PC está infectado y necesitan que instales un programa de acceso remoto. ¿Qué haces?",
+   "criterios": "Colgar: es estafa clásica. Nadie legítimo llama proactivamente pidiendo instalar control remoto ni pagos."},
+  {"pregunta": "Sospechas que han entrado en tu correo. Da los primeros 4 pasos en orden.",
+   "criterios": "1) Cambiar contraseña del correo desde dispositivo limpio, 2) revisar reglas de reenvío/recuperación, 3) cambiar banco y críticos + activar 2FA, 4) revisar sesiones abiertas / avisar y denunciar si hay daño (017 INCIBE)."},
+  {"pregunta": "¿Qué precauciones exige una wifi pública y qué operaciones no deberías hacer en ella?",
+   "criterios": "Evitar operaciones sensibles (banco, compras); usar datos móviles para eso. No aceptar certificados raros ni redes clonadas; HTTPS siempre."}
+]

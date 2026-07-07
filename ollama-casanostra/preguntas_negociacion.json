@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Qué es el BATNA y por qué es lo más importante que debes preparar antes de negociar?",
+   "criterios": "Mejor alternativa si no hay acuerdo. Da poder: quien tiene mejor alternativa puede exigir más y levantarse sin miedo. Se construye antes de negociar."},
+  {"pregunta": "¿Qué es el efecto ancla en una negociación y qué haces si la otra parte abre con una cifra absurda?",
+   "criterios": "La primera cifra condiciona todo el rango. Ante un ancla absurda: no contra-ofertar de inmediato, sino cuestionar su justificación ('¿cómo llegas a esa cifra?')."},
+  {"pregunta": "Te piden tu salario actual en una entrevista. ¿Cuál es la mejor forma de manejarlo?",
+   "criterios": "No dar la cifra actual; redirigir al rango objetivo basado en investigación de mercado para el puesto. Idealmente que ellos den su rango primero."},
+  {"pregunta": "¿Por qué nunca debes hacer una concesión gratis y cómo se concede correctamente?",
+   "criterios": "Ceder gratis enseña que cediendo más se obtiene más. Correcto: intercambiar ('puedo bajar X si incluyes Y')."},
+  {"pregunta": "Acabas de decir tu precio y hay un silencio incómodo. ¿Qué haces y por qué?",
+   "criterios": "Callar y aguantar el silencio. Quien se incomoda primero suele ceder; rellenar el silencio rebajándose es un error clásico."},
+  {"pregunta": "¿Qué significa 'duro con el problema, suave con la persona'? Da un ejemplo.",
+   "criterios": "Defender intereses con firmeza sin atacar ni ofender a la persona. Ejemplo válido: rechazar la cifra sin descalificar a quien la propone."},
+  {"pregunta": "Estás comprando un coche usado y quieres el mejor precio. Nombra 3 tácticas legítimas.",
+   "criterios": "Varias de: tener y mencionar alternativas (otros vendedores/presupuestos), detectar defectos objetivos, disposición real a irse, anclar bajo con justificación, negociar extras en vez de solo precio."},
+  {"pregunta": "¿Cuáles son las señales de que debes levantarte de una negociación sin acuerdo?",
+   "criterios": "Cruzar tu límite escrito, presión artificial de urgencia, cambios de lo pactado a última hora. Debe afirmar que retirarse es un resultado válido, no un fracaso."}
+]

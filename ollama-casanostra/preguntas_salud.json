@@ -1,0 +1,18 @@
+[
+  {"pregunta": "Ordena por impacto en la salud general: entrenar fuerza, dormir bien, suplementos. Justifica.",
+   "criterios": "Dormir > fuerza > suplementos (estos últimos casi irrelevantes sin lo anterior). Debe justificar que el sueño afecta a todo lo demás."},
+  {"pregunta": "¿Qué es la sobrecarga progresiva y por qué sin ella no hay progreso?",
+   "criterios": "Aumentar gradualmente la exigencia (peso, repeticiones) semana a semana; el cuerpo solo se adapta si el estímulo crece."},
+  {"pregunta": "¿Qué es el cardio en zona 2 y cómo sabes que estás en ella sin pulsómetro?",
+   "criterios": "Intensidad suave-moderada aeróbica; la prueba: puedes mantener una conversación mientras lo haces."},
+  {"pregunta": "¿Cuánta proteína diaria se recomienda a quien entrena fuerza y cómo repartirla?",
+   "criterios": "~1,6-2,2 g por kg de peso corporal al día, repartida en varias comidas."},
+  {"pregunta": "'Los carbohidratos por la noche engordan.' ¿Verdadero o falso? Explica.",
+   "criterios": "Falso: el peso depende del balance energético total sostenido, no de la hora de un macronutriente."},
+  {"pregunta": "Diseña la 'versión día malo' de un entrenamiento para alguien sin tiempo ni ganas, y explica su función.",
+   "criterios": "Algo mínimo (10 min de paseo, 2 ejercicios básicos). Función: no romper la cadena del hábito; la constancia importa más que la sesión perfecta."},
+  {"pregunta": "¿Por qué la báscula engaña a corto plazo y qué otras señales de progreso conviene medir?",
+   "criterios": "Fluctúa por agua, glucógeno, digestión. Otras señales: fuerza en los básicos, medidas, fotos, energía, ropa."},
+  {"pregunta": "Nombra 3 situaciones en las que hay que parar de entrenar e ir al médico.",
+   "criterios": "Dolor en el pecho, mareos con esfuerzo, dolor articular agudo que no cede; también condiciones previas o +40 sedentario antes de empezar. Debe ser tajante."}
+]

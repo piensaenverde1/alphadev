@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Qué organismo lleva: la declaración de la renta, el paro, el carnet de conducir y el empadronamiento?",
+   "criterios": "Renta: AEAT (Hacienda). Paro/prestaciones: SEPE. Carnet/vehículos: DGT. Empadronamiento: ayuntamiento."},
+  {"pregunta": "¿Qué es Cl@ve/certificado digital y por qué compensa sacarlo aunque cueste un rato?",
+   "criterios": "Identidad digital para hacer trámites online sin presencialidad ni citas; se saca una vez y ahorra horas en casi todos los trámites futuros."},
+  {"pregunta": "¿Cómo distingues la web oficial de un trámite de una web intermediaria que te va a cobrar?",
+   "criterios": "Oficiales: dominios .gob.es / sedes electrónicas oficiales, y los trámites suelen ser gratuitos. Señal de alarma: cobrar por citas o gestiones gratuitas, anuncios posicionados."},
+  {"pregunta": "¿Por qué hay que guardar el justificante con número de registro de cualquier solicitud?",
+   "criterios": "Es la prueba oficial con fecha de que presentaste algo; sin ella, ante la administración lo no demostrable no existe (plazos, silencio, recursos dependen de esa fecha)."},
+  {"pregunta": "¿Qué es el silencio administrativo y qué te permite hacer saberlo?",
+   "criterios": "Efecto legal cuando la administración no responde en plazo (según trámite, estimatorio o desestimatorio); permite reclamar/recurrir en vez de esperar indefinidamente."},
+  {"pregunta": "Una compañía telefónica te cobra un servicio no contratado y atención al cliente no lo soluciona. Describe la escalada correcta.",
+   "criterios": "Reclamación formal con número de incidencia → plazo ~1 mes → Oficina de Atención al Usuario de Telecomunicaciones (y/o consumo/OMIC); burofax o registro como prueba si hace falta."},
+  {"pregunta": "Recibes una notificación con la que no estás de acuerdo. ¿Qué es lo primero que apuntas y por qué?",
+   "criterios": "La fecha de notificación y el plazo de recurso (habitualmente un mes): pasado el plazo se pierde el derecho aunque tengas razón."},
+  {"pregunta": "¿Dónde verificas los requisitos actualizados de cualquier trámite antes de hacerlo, y por qué no confiar en resúmenes de terceros?",
+   "criterios": "En la sede electrónica oficial del organismo correspondiente; plazos, tasas y formularios cambian y los resúmenes (incluida la IA) pueden estar desactualizados."}
+]

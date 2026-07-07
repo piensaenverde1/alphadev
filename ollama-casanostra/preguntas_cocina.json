@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Cómo se hace un buen sofrito y cuál es el error más común?",
+   "criterios": "Cebolla/ajo a fuego medio-bajo con paciencia (10-15 min) hasta transparente/dorado. Error: fuego fuerte y prisa, que lo quema y amarga."},
+  {"pregunta": "¿Cuándo se usa fuego fuerte y cuándo fuego suave? Da un ejemplo de cada.",
+   "criterios": "Fuerte para dorar/sellar (carne, salteados: sartén caliente y poca cantidad). Suave para guisos y sofritos (tiempo = sabor)."},
+  {"pregunta": "Explica el método para planificar un menú semanal que ahorre dinero.",
+   "criterios": "Revisar antes nevera/despensa (lo que caduca manda), plantilla equilibrada (legumbre, pescado, arroz/pasta, verdura), y lista de la compra por secciones."},
+  {"pregunta": "¿Qué es el batch cooking y qué 4-5 preparaciones harías un domingo para toda la semana?",
+   "criterios": "Cocinar por lotes una vez para varios días: un guiso grande, una base (arroz/quinoa), verduras asadas, una salsa. Enfriar antes de guardar, congelar etiquetado."},
+  {"pregunta": "Te sobra medio pollo asado. Di 3 platos distintos para aprovecharlo.",
+   "criterios": "3 propuestas razonables: croquetas, sopa/caldo con la carcasa, ensalada o sándwich, arroz con pollo, tacos..."},
+  {"pregunta": "¿Cómo se descongela de forma segura y por qué no en la encimera?",
+   "criterios": "En nevera (o microondas si se cocina ya). A temperatura ambiente la superficie pasa horas en zona de peligro bacteriano."},
+  {"pregunta": "¿Qué precauciones especiales exige el pollo crudo en la cocina?",
+   "criterios": "Tabla/cuchillo separados o lavados con agua caliente y jabón, no lavar el pollo bajo el grifo (salpica bacterias), cocinado siempre completo."},
+  {"pregunta": "Truco para que la pasta quede en su punto y no pasada.",
+   "criterios": "Agua abundante muy salada, probar 1-2 min antes del tiempo del paquete, reservar agua de cocción para ligar la salsa; al dente se termina en la sartén con la salsa."}
+]

@@ -1,0 +1,18 @@
+[
+  {"pregunta": "¿Qué es el input comprensible y por qué es la base de aprender un idioma?",
+   "criterios": "Contenido que entiendes al 80-90% (algo por encima de tu nivel); el idioma se adquiere por exposición masiva a mensajes que entiendes, la gramática solo ordena."},
+  {"pregunta": "¿Qué es la repetición espaciada y por qué 10 palabras al día ganan a 100 el domingo?",
+   "criterios": "Repasar justo antes de olvidar en intervalos crecientes; la memoria consolida con repasos distribuidos, no con atracones."},
+  {"pregunta": "¿Por qué es mejor aprender 'make a decision' que aprender solo la palabra 'make'?",
+   "criterios": "Los bloques/colocaciones se usan tal cual al hablar y evitan errores de combinación (decir 'take a decision'); el idioma real funciona por frases."},
+  {"pregunta": "¿Qué es el shadowing y qué mejora?",
+   "criterios": "Repetir en voz alta encima de un audio imitando ritmo y entonación casi simultáneamente; mejora pronunciación, fluidez y oído."},
+  {"pregunta": "Traduce y explica el falso amigo: 'I'm embarrassed' y 'actually'.",
+   "criterios": "Embarrassed = avergonzado (no embarazada, que es pregnant). Actually = en realidad/de hecho (no actualmente, que es currently)."},
+  {"pregunta": "Corrige este error típico de hispanohablante y explica la regla: 'I have a car red and is very fast.'",
+   "criterios": "'I have a red car and it is very fast.' Reglas: adjetivo antes del nombre; en inglés el sujeto (it) no puede omitirse."},
+  {"pregunta": "¿Cómo se pronuncia la terminación -ed en 'worked', 'played' y 'wanted'? ",
+   "criterios": "worked = /t/ (workt), played = /d/ (playd), wanted = /ɪd/ (want-id). Depende del sonido final del verbo; nunca 'work-ED' fuerte en todos."},
+  {"pregunta": "Diseña una sesión de 30 minutos de inglés autodidacta bien aprovechada.",
+   "criterios": "Combinación razonable: ~10 min repaso espaciado de frases, ~10 min input (podcast/serie subt. inglés), ~10 min producción (shadowing, rol con IA o escribir y corregir)."}
+]
