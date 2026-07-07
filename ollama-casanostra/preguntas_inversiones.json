@@ -1,0 +1,22 @@
+[
+  {"pregunta": "Si invierto 1.000€ al 7% anual compuesto, ¿cuánto tendré aproximadamente en 10 años? Explica el cálculo brevemente.",
+   "criterios": "Aproximadamente 1.967€ (se acepta ~1.900-2.000€ o 'casi el doble'). Debe mencionar interés compuesto o la regla del 72 (72/7≈10 años para duplicar)."},
+  {"pregunta": "¿Qué es la regla del 72 y cuántos años tarda en duplicarse el dinero al 6% anual?",
+   "criterios": "Dividir 72 entre la rentabilidad anual da los años para duplicar. Al 6%: 72/6 = 12 años."},
+  {"pregunta": "¿Por qué es importante diversificar? Da un ejemplo concreto de cartera mal diversificada y una bien diversificada.",
+   "criterios": "Reduce el riesgo de que un solo fallo arruine la cartera. Mal: todo en una acción/sector/cripto. Bien: fondo indexado global o reparto entre muchas empresas, sectores y países."},
+  {"pregunta": "¿Qué diferencia hay entre comprar una acción individual y un fondo indexado global en términos de riesgo?",
+   "criterios": "La acción individual puede quebrar y perderlo todo (riesgo específico); el fondo indexado reparte entre cientos/miles de empresas y elimina el riesgo de empresa única, quedando solo el riesgo de mercado."},
+  {"pregunta": "Dos fondos siguen el mismo índice: el fondo A tiene TER 0,2% y el B tiene TER 2%. ¿Cuál eliges y qué impacto tiene a 30 años?",
+   "criterios": "El A. Debe explicar que las comisiones se componen: a largo plazo la diferencia es enorme (decenas de puntos porcentuales del capital final; se acepta cualquier cifra razonable que muestre el orden de magnitud)."},
+  {"pregunta": "¿Qué es el fondo de emergencia, de qué tamaño debe ser y dónde debe estar guardado?",
+   "criterios": "Dinero para imprevistos ANTES de invertir: 3-6 meses de gastos, en producto líquido y sin riesgo (cuenta remunerada/depósito), nunca en bolsa."},
+  {"pregunta": "Un 'gurú' de internet te garantiza un 30% mensual sin riesgo si le transfieres dinero. ¿Qué haces y qué señales de estafa detectas?",
+   "criterios": "Rechazarlo: es estafa. Señales: rentabilidad garantizada + altísima, urgencia, contacto no solicitado, esquema piramidal, no registrado en CNMV. Debe ser tajante en que no existe alto retorno garantizado sin riesgo."},
+  {"pregunta": "¿Qué es el DCA (aportación periódica) y cuál es su principal ventaja psicológica?",
+   "criterios": "Invertir una cantidad fija cada mes independientemente del mercado. Ventaja psicológica: elimina la decisión de 'cuándo entrar' y el market timing; compra más cuando está barato."},
+  {"pregunta": "Tu cartera indexada a largo plazo cae un 30% en una crisis y tu plan escrito decía horizonte de 20 años. ¿Qué hace un inversor disciplinado y por qué?",
+   "criterios": "No vender en pánico: mantener el plan (y seguir aportando si toca). Vender consolidaría la pérdida; las caídas están contempladas en el horizonte largo. Revisar el plan solo si cambió SU situación, no por el precio."},
+  {"pregunta": "Tengo ahorrado el dinero para la entrada de un piso que compraré dentro de 1 año. ¿Debería meterlo en bolsa para sacarle algo más? Justifica.",
+   "criterios": "NO. Horizonte de 1 año es corto plazo: una caída podría dejarle sin la entrada. Ese dinero va a producto sin riesgo y líquido (cuenta remunerada/depósito). Debe ser claro y sin ambigüedad."}
+]
