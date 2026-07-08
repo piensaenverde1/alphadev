@@ -131,8 +131,14 @@ def guardar(resultados: dict[str, list[int]], num_preguntas: int) -> None:
 
 
 def main() -> None:
-    global PREGUNTAS
+    global PREGUNTAS, JUEZ
     args = sys.argv[1:]
+    # --juez <modelo>: corregir con otro modelo (evita que uno se autocorrija)
+    if "--juez" in args:
+        i = args.index("--juez")
+        JUEZ = args[i + 1]
+        del args[i:i + 2]
+        print(f"Juez del examen: {JUEZ}")
     # Un argumento .json es un banco de preguntas alternativo; el resto, modelos
     bancos = [a for a in args if a.endswith(".json")]
     modelos = [a for a in args if not a.endswith(".json")] or ["casanostra"]
