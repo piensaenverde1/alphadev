@@ -48,11 +48,15 @@ def trocear(texto: str) -> list[str]:
     return [t.strip() for t in trozos if t.strip()]
 
 
-def indexar(carpeta: str) -> None:
-    ruta = Path(carpeta).expanduser()
-    archivos = [p for p in ruta.rglob("*") if p.suffix.lower() in (".txt", ".md")]
+def indexar(carpetas: list[str]) -> None:
+    # Acepta VARIAS carpetas y las indexa TODAS juntas en un único índice
+    # (antes solo tomaba una y sobrescribía: indexar la segunda borraba la primera).
+    archivos = []
+    for carpeta in carpetas:
+        ruta = Path(carpeta).expanduser()
+        archivos += [p for p in ruta.rglob("*") if p.suffix.lower() in (".txt", ".md")]
     if not archivos:
-        sys.exit(f"No hay archivos .txt ni .md en {ruta}")
+        sys.exit(f"No hay archivos .txt ni .md en: {', '.join(carpetas)}")
     entradas = []
     for p in archivos:
         trozos = trocear(p.read_text(encoding="utf-8", errors="ignore"))
@@ -111,7 +115,7 @@ def preguntar(pregunta: str) -> None:
 if __name__ == "__main__":
     try:
         if len(sys.argv) >= 3 and sys.argv[1] == "indexar":
-            indexar(sys.argv[2])
+            indexar(sys.argv[2:])  # una o varias carpetas
         elif len(sys.argv) >= 2:
             preguntar(" ".join(sys.argv[1:]))
         else:

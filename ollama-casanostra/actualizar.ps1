@@ -45,9 +45,11 @@ foreach ($mf in Get-ChildItem "$DIR\habilidades\*.Modelfile") {
 }
 
 # 4. Reindexar la biblioteca con todo el conocimiento
-Write-Host "[4/4] Reindexando la biblioteca..."
+Write-Host "[4/4] Reindexando la biblioteca (todo el conocimiento junto)..."
 if (Get-Command python -ErrorAction SilentlyContinue) {
-  python "$DIR\biblioteca.py" indexar "$DIR\conocimiento"
+  # Indexa conocimiento + cerebro inversor + busquedas web guardadas (las que existan)
+  $carpetas = @("$DIR\conocimiento") + (@("$DIR\cerebro_inversor","$DIR\conocimiento_web") | Where-Object { Test-Path $_ })
+  python "$DIR\biblioteca.py" indexar @carpetas
 } else {
   Write-Host "  (Python no encontrado: reindexa luego con biblioteca.py)"
 }
