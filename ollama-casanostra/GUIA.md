@@ -112,6 +112,21 @@ Los resultados se acumulan en `resultados.md`.
 
 ---
 
+## LAS 10 MEJORAS NUEVAS
+
+| # | Qué | Comando |
+|---|---|---|
+| 1 | Núcleo compartido de código | `nucleo.py` (lo usan otros; no se llama suelto) |
+| 2 | Memoria con poda automática | (automático en `chat_memoria.py` al pasar de 300 líneas) |
+| 3 | Informe cripto automático | `python estudio_cripto.py` (o cada 12h con cadencia) |
+| 4 | Dashboard visual en HTML | `python motor.py --html` → abre `dashboard.html` |
+| 5 | Biblioteca incremental (rápida) | `python biblioteca.py indexar conocimiento --nuevo` |
+| 6 | Simulador de inversión en papel | `python simulador.py estado` |
+| 7 | Código que se verifica y corrige solo | `python verificador.py "una función que..."` |
+| 8 | Vigía de modelos mejores | `python vigia_modelos.py` |
+| 9 | Multi-juez en exámenes | `python examen.py banco.json casanostra --jueces llama3.2,qwen2.5-coder` |
+| 10 | Debate entre especialistas | `python debate.py "tu duda" --a cazador --b valorador` |
+
 ## RUTINA SEMANAL RECOMENDADA (5 minutos)
 
 1. `powershell -File revision.ps1` — comprueba que todo está sano.

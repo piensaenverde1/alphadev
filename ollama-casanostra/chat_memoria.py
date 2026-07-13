@@ -28,6 +28,40 @@ def leer() -> str:
 def anotar(texto: str) -> None:
     with ARCHIVO.open("a", encoding="utf-8") as f:
         f.write(texto.rstrip() + "\n")
+    podar_si_grande()
+
+
+MAX_LINEAS_MEMORIA = 300
+
+
+def podar_si_grande() -> None:
+    """Mejora 2: si la memoria crece demasiado, el modelo la resume y comprime.
+    Guarda una copia .bak antes de tocar nada."""
+    if not ARCHIVO.exists():
+        return
+    lineas = ARCHIVO.read_text(encoding="utf-8").splitlines()
+    if len(lineas) <= MAX_LINEAS_MEMORIA:
+        return
+    print(f"\n[Memoria grande ({len(lineas)} líneas): resumiendo automáticamente...]")
+    ARCHIVO.with_suffix(".md.bak").write_text("\n".join(lineas), encoding="utf-8")
+    # Conserva la mitad más reciente intacta; resume la mitad antigua
+    corte = len(lineas) // 2
+    antiguo, reciente = "\n".join(lineas[:corte]), "\n".join(lineas[corte:])
+    try:
+        resumen = preguntar([
+            {"role": "system", "content": (
+                "Resume estas notas de memoria conservando SOLO los datos que "
+                "seguirán siendo útiles (decisiones, datos personales/proyecto, "
+                "preferencias, tareas pendientes). Elimina redundancias y lo "
+                "obsoleto. Devuelve viñetas concisas, sin comentarios.")},
+            {"role": "user", "content": antiguo},
+        ], stream=False)
+    except OSError:
+        return  # si falla, no rompas la sesión: deja la memoria como estaba
+    ARCHIVO.write_text(
+        f"## Memoria resumida (poda automática)\n{resumen}\n\n{reciente}\n",
+        encoding="utf-8")
+    print("[Memoria comprimida. Copia de seguridad en memoria.md.bak]")
 
 
 def preguntar(mensajes: list[dict], stream: bool = True) -> str:

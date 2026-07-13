@@ -23,6 +23,7 @@ from pathlib import Path
 from urllib import request as urlreq
 
 JUEZ = "casanostra"  # modelo que corrige el examen
+JUECES = []          # mejora 9: varios jueces (se rellena con --jueces)
 URL = "http://localhost:11434/api/chat"
 CARPETA = Path(__file__).parent
 PREGUNTAS = CARPETA / "preguntas.json"
@@ -76,8 +77,8 @@ def cargar_preguntas() -> list[dict]:
     return json.loads(PREGUNTAS.read_text(encoding="utf-8"))
 
 
-def corregir(pregunta: str, criterios: str, respuesta: str) -> int:
-    veredicto = llamar(JUEZ, [
+def corregir_con(juez: str, pregunta: str, criterios: str, respuesta: str) -> float:
+    veredicto = llamar(juez, [
         {"role": "system", "content": (
             "Eres un corrector de exámenes estricto y justo. Te doy una pregunta, "
             "los criterios de corrección y la respuesta de un alumno. Puntúa de 0 a 10 "
@@ -91,9 +92,18 @@ def corregir(pregunta: str, criterios: str, respuesta: str) -> int:
     ])
     notas = re.findall(r"NOTA:\s*(\d+(?:[.,]\d+)?)", veredicto)
     if not notas:
-        return -1  # el juez no dio nota parseable: se marca, no se puntúa como 0
-    nota = float(notas[-1].replace(",", "."))
-    return max(0, min(10, round(nota)))
+        return -1.0
+    return max(0.0, min(10.0, float(notas[-1].replace(",", "."))))
+
+
+def corregir(pregunta: str, criterios: str, respuesta: str) -> int:
+    # Mejora 9: si hay varios jueces, se promedian (reduce el sesgo de uno solo).
+    jueces = JUECES if JUECES else [JUEZ]
+    notas = [corregir_con(j, pregunta, criterios, respuesta) for j in jueces]
+    validas = [n for n in notas if n >= 0]
+    if not validas:
+        return -1  # ningún juez dio nota parseable: se marca, no se penaliza
+    return round(sum(validas) / len(validas))
 
 
 def examinar(modelo: str, preguntas: list[dict]) -> list[int]:
@@ -131,8 +141,14 @@ def guardar(resultados: dict[str, list[int]], num_preguntas: int) -> None:
 
 
 def main() -> None:
-    global PREGUNTAS, JUEZ
+    global PREGUNTAS, JUEZ, JUECES
     args = sys.argv[1:]
+    # --jueces m1,m2,m3 : varios jueces promediados (mejora 9)
+    if "--jueces" in args:
+        i = args.index("--jueces")
+        JUECES = [m.strip() for m in args[i + 1].split(",") if m.strip()]
+        del args[i:i + 2]
+        print(f"Jueces del examen (promediados): {', '.join(JUECES)}")
     # --juez <modelo>: corregir con otro modelo (evita que uno se autocorrija)
     if "--juez" in args:
         i = args.index("--juez")

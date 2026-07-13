@@ -118,7 +118,55 @@ def roi() -> None:
     print("  Tu contexto (C1) es portátil: si mañana cambias de modelo, todo esto se conserva.")
 
 
+def exportar_html() -> None:
+    """Mejora 4: dashboard visual en HTML con la evolución de las notas."""
+    ruta = CARPETA / "resultados.md"
+    filas = []
+    if ruta.exists():
+        filas = re.findall(r"^\|\s*([\d-]+)\s*\|\s*([^|]+?)\s*\|\s*([\d.]+)\s*\|",
+                           ruta.read_text(encoding="utf-8"), re.M)
+    barras = ""
+    for fecha, modelo, media in filas[-20:]:
+        pct = float(media) * 10
+        barras += (f'<div class="fila"><span class="et">{fecha} · {modelo.strip()}</span>'
+                   f'<span class="barra"><span style="width:{pct}%"></span></span>'
+                   f'<span class="nota">{media}/10</span></div>\n')
+    if not barras:
+        barras = "<p>Aún no hay exámenes. Corre: python examen.py preguntas_programacion.json casanostra</p>"
+    try:
+        modelos = api("/api/tags").get("models", [])
+        inv = "".join(f"<li>{m['name']} — {m.get('size',0)/1e9:.1f} GB</li>" for m in modelos)
+    except OSError:
+        inv = "<li>(Ollama no responde)</li>"
+    html = f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Dashboard Casanostra</title>
+<style>
+body{{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;
+background:#0f1115;color:#e6e6e6}}h1{{color:#7bd88f}}h2{{color:#8ab4f8;margin-top:2rem}}
+.fila{{display:flex;align-items:center;gap:.6rem;margin:.3rem 0}}
+.et{{width:230px;font-size:.85rem;color:#aaa}}
+.barra{{flex:1;background:#222;border-radius:6px;overflow:hidden;height:18px}}
+.barra span{{display:block;height:100%;background:linear-gradient(90deg,#7bd88f,#8ab4f8)}}
+.nota{{width:56px;text-align:right;font-variant-numeric:tabular-nums}}
+li{{margin:.2rem 0}}small{{color:#888}}
+</style></head><body>
+<h1>🧠 Casanostra — Dashboard</h1>
+<small>Generado el {__import__('datetime').datetime.now():%d/%m/%Y %H:%M} · 100% local y gratuito</small>
+<h2>Evolución de las notas de examen</h2>
+{barras}
+<h2>Modelos instalados</h2><ul>{inv}</ul>
+<p><small>Tu contexto es portátil: si cambias de modelo, todo esto se conserva.</small></p>
+</body></html>"""
+    salida = CARPETA / "dashboard.html"
+    salida.write_text(html, encoding="utf-8")
+    print(f"Dashboard HTML generado: {salida}")
+    print("Ábrelo con doble clic o:  start dashboard.html  (Windows)")
+
+
 def main() -> None:
+    if "--html" in sys.argv:
+        exportar_html()
+        return
     print("MOTOR AGÉNTICO — Casanostra")
     try:
         inventario()

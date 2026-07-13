@@ -48,7 +48,7 @@ def trocear(texto: str) -> list[str]:
     return [t.strip() for t in trozos if t.strip()]
 
 
-def indexar(carpetas: list[str]) -> None:
+def indexar(carpetas: list[str], incremental: bool = False) -> None:
     # Acepta VARIAS carpetas y las indexa TODAS juntas en un único índice
     # (antes solo tomaba una y sobrescribía: indexar la segunda borraba la primera).
     archivos = []
@@ -57,17 +57,49 @@ def indexar(carpetas: list[str]) -> None:
         archivos += [p for p in ruta.rglob("*") if p.suffix.lower() in (".txt", ".md")]
     if not archivos:
         sys.exit(f"No hay archivos .txt ni .md en: {', '.join(carpetas)}")
+
+    # Mejora 5: indexado incremental. Con --nuevo solo se reincrustan los
+    # archivos cuyo contenido cambió (por firma de tamaño+mtime), reutilizando
+    # los vectores ya calculados de los que no cambiaron. Acelera mucho al crecer.
+    previas = []
+    firmas = {}
+    if incremental and INDICE.exists():
+        previas = json.loads(INDICE.read_text(encoding="utf-8"))
+        firmas = _leer_firmas()
+
     entradas = []
     for p in archivos:
+        firma = f"{p.stat().st_size}-{int(p.stat().st_mtime)}"
+        cacheadas = [e for e in previas if e["archivo"] == p.name] if incremental else []
+        if incremental and cacheadas and firmas.get(p.name) == firma:
+            entradas.extend(cacheadas)
+            print(f"  {p.name}: sin cambios (reutilizado)")
+            continue
         trozos = trocear(p.read_text(encoding="utf-8", errors="ignore"))
         print(f"  {p.name}: {len(trozos)} fragmentos")
-        # incrustar en lotes de 16 para no saturar la API
         for inicio in range(0, len(trozos), 16):
             lote = trozos[inicio : inicio + 16]
             for texto, vector in zip(lote, incrustar(lote)):
                 entradas.append({"archivo": p.name, "texto": texto, "vector": vector})
+        firmas[p.name] = firma
+
     INDICE.write_text(json.dumps(entradas), encoding="utf-8")
+    if incremental:
+        _guardar_firmas({p.name: firmas.get(p.name, "") for p in archivos})
     print(f"\nÍndice guardado: {len(entradas)} fragmentos → {INDICE}")
+
+
+def _firmas_path():
+    return INDICE.parent / "indice_firmas.json"
+
+
+def _leer_firmas() -> dict:
+    fp = _firmas_path()
+    return json.loads(fp.read_text(encoding="utf-8")) if fp.exists() else {}
+
+
+def _guardar_firmas(firmas: dict) -> None:
+    _firmas_path().write_text(json.dumps(firmas), encoding="utf-8")
 
 
 def coseno(a: list[float], b: list[float]) -> float:
@@ -115,7 +147,9 @@ def preguntar(pregunta: str) -> None:
 if __name__ == "__main__":
     try:
         if len(sys.argv) >= 3 and sys.argv[1] == "indexar":
-            indexar(sys.argv[2:])  # una o varias carpetas
+            incremental = "--nuevo" in sys.argv
+            carpetas = [a for a in sys.argv[2:] if a != "--nuevo"]
+            indexar(carpetas, incremental=incremental)  # una o varias carpetas
         elif len(sys.argv) >= 2:
             preguntar(" ".join(sys.argv[1:]))
         else:
