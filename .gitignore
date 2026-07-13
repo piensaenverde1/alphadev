@@ -24,3 +24,13 @@ share/python-wheels/
 MANIFEST
 investment_assistant/.env
 investment_assistant/memory/*.db
+
+# Artefactos generados por el sistema Casanostra (salidas, no código)
+ollama-casanostra/resultado_segi*.json
+ollama-casanostra/respuestas_segi.json
+ollama-casanostra/resultados.md
+ollama-casanostra/memoria.md
+ollama-casanostra/indice_biblioteca.json
+ollama-casanostra/conocimiento_web/
+ollama-casanostra/habilidades_generadas/
+ollama-casanostra/__pycache__/
