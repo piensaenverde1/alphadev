@@ -11,6 +11,21 @@ GitHub ni en ningún sitio; cualquier repositorio que diga ofrecerlos es falso o
 malware. Lo que sí puedes tener gratis es el mejor modelo abierto que quepa en
 tu máquina, bien configurado — y eso es esto.
 
+## 📖 ¿Por dónde empiezo? Lee GUIA.md
+
+El sistema ha crecido: **19 asistentes, 9 programas, 18 exámenes y 20 temarios**.
+El mapa completo con todos los comandos está en **[GUIA.md](GUIA.md)**. Los
+imprescindibles:
+
+| Quiero... | Comando |
+|---|---|
+| Poner todo al día | `powershell -File actualizar.ps1` |
+| Revisar la salud del sistema | `powershell -File revision.ps1` |
+| Ver mi dashboard | `python motor.py` |
+| Ayuda con un error | `ollama run mecanico` |
+| Que PowerShell entienda castellano | `powershell -File habla.ps1 -Instalar` |
+| Preguntar a internet (o local si no hay) | `python internauta.py "..."` |
+
 ## Instalación (3 pasos)
 
 1. Instala Ollama: https://ollama.com/download
